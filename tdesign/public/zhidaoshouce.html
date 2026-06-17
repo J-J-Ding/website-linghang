@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>领航智研平台使用指南</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2ecc71;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --accent: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .platform-url {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            padding: 8px 15px;
+            border-radius: 30px;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .section h2 {
+            color: var(--dark);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light);
+        }
+
+        .feature-card {
+            display: flex;
+            margin-bottom: 25px;
+            align-items: flex-start;
+        }
+
+        .feature-icon {
+            background-color: var(--light);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            flex-shrink: 0;
+            color: var(--primary);
+            font-size: 1.5rem;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-content h3 {
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+
+        .steps {
+            margin-top: 15px;
+        }
+
+        .step {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .step:before {
+            content: "•";
+            color: var(--primary);
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -5px;
+        }
+
+        .note {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--secondary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 5px 5px 0;
+        }
+
+        .note strong {
+            color: var(--secondary);
+        }
+
+        .example {
+            font-style: italic;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .future-features {
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .future-features h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+        }
+
+        .future-list {
+            list-style-type: none;
+        }
+
+        .future-list li {
+            margin-bottom: 8px;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .future-list li:before {
+            content: "→";
+            color: var(--accent);
+            position: absolute;
+            left: 0;
+        }
+
+        .image-placeholder {
+            background-color: #eee;
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #777;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .feature-card {
+                flex-direction: column;
+            }
+
+            .feature-icon {
+                margin-bottom: 15px;
+                margin-right: 0;
+            }
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>领航智研平台</h1>
+            <p>AI提效 · 智能研发辅助平台</p>
+            <div class="platform-url">
+                平台地址: http://10.239.69.30:3002/ai/chat
+            </div>
+        </header>
+
+        <section class="section">
+            <h2>核心功能</h2>
+
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <div class="feature-content">
+                    <h3>任务批量处理功能</h3>
+                    <p>高效处理批量任务，提升工作效率</p>
+
+                    <div class="steps">
+                        <div class="step">在模版中心新建模版</div>
+                        <div class="step">自定义批量任务模版（写通用提示词、任务名称、输入内容或页面链接）</div>
+                        <div class="step">执行批量任务（选择批量任务智能体，将任务页面链接作为提问）</div>
+                    </div>
+
+                    <div class="image-placeholder">批量任务处理模版示例图</div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔗</div>
+                <div class="feature-content">
+                    <h3>引用icenter功能</h3>
+                    <p>快速引用icenter内容进行智能处理</p>
+
+                    <div class="steps">
+                        <div class="step">选择引用icenter</div>
+                        <div class="step">直接写页面链接，然后加上需要的操作提示词</div>
+                    </div>
+
+                    <div class="image-placeholder">引用icenter功能示例图</div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <div class="feature-content">
+                    <h3>引用rdc功能</h3>
+                    <p>便捷引用RDC内容进行智能分析</p>
+
+                    <div class="steps">
+                        <div class="step">选择引用rdc</div>
+                        <div class="step">直接写rdc编号，然后加上需要的操作提示词</div>
+                    </div>
+
+                    <div class="image-placeholder">引用rdc功能示例图</div>
+                </div>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔍</div>
+                <div class="feature-content">
+                    <h3>故障分析智能体</h3>
+                    <p>智能分析故障数据，快速定位问题</p>
+
+                    <div class="steps">
+                        <div class="step">选择故障分析智能体</div>
+                        <div class="step">直接对话提问要查询的内容</div>
+                    </div>
+
+                    <div class="note">
+                        <strong>注1：</strong>数据库使用的是RDC【故障复盘】数据，时间范围为2023年1月1日~2025年6月7日。
+                        <br>
+                        <strong>注2：</strong>提问时尽量使用标准术语（如特性、领域、团队）可极大提升识别准确率。
+                    </div>
+
+                    <div class="example">
+                        示例1：集结号团队端口特性故障在23、24、25年分别有多少单。
+                        <br>
+                        示例2：[其他示例问题]
+                    </div>
+                    <img src="https://icenterapi.zte.com.cn/group2/M03/38/7E/CimNG2hGZc2AGwYzAALeFBp8mOE812.png"
+                        alt="故障分析智能体示例图" style="width:100%; max-width:600px; height:auto;">
+
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2>未来规划</h2>
+
+            <div class="future-features">
+                <h3>待开发功能</h3>
+                <ul class="future-list">
+                    <li>自定义多步骤批量任务处理智能体</li>
+                    <li>可以引用AI应用的批量任务处理智能体</li>
+                    <li>新增、修改提示词模版</li>
+                    <li>引用编码规范知识库</li>
+                    <li>上传文件功能</li>
+                    <li>新对话功能提示页</li>
+                </ul>
+            </div>
+
+            <div class="future-features">
+                <h3>待处理任务</h3>
+                <ul class="future-list">
+                    <li>批量任务模版录入</li>
+                    <li>通用提示词模版录入</li>
+                </ul>
+            </div>
+        </section>
+
+        <footer>
+            <p>最后更新时间：2025-06-09 14:36:32</p>
+            <p>© 2025 领航智研平台 - AI提效研发辅助工具</p>
+        </footer>
+    </div>
+</body>
+
+</html>

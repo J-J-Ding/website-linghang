@@ -1,0 +1,17 @@
+{
+    "武汉_302A实验室": {
+        "JUMP_HOST": "10.239.47.20",
+        "JUMP_USER": "Administrator",
+        "JUMP_PASS": "Zxosp1000"
+    },
+    "燕郊_1B3-6实验室": {
+        "JUMP_HOST": "10.233.100.240",
+        "JUMP_USER": "jbc",
+        "JUMP_PASS": "Gy100@bjj"
+    },
+    "燕郊_1B4-1实验室": {
+        "JUMP_HOST": "10.156.128.43",
+        "JUMP_USER": "administrator",
+        "JUMP_PASS": "ZTEvdc00.52#"
+    }
+}

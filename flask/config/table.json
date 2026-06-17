@@ -1,0 +1,2049 @@
+{
+  "databases": [
+    {
+      "name": "flask/data/sql_config.db",
+      "tables": [
+        {
+          "name": "user",
+          "fields": [
+            {
+              "name": "工号",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "姓名",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "岗位",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "部门",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "团队",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "team",
+          "fields": [
+            {
+              "name": "团队",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "部门",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "version",
+          "fields": [
+            {
+              "name": "版本",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "目标",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "分支",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "主控",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "需求情况",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障情况",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "版本风险情况",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "团队风险情况",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "branch",
+          "fields": [
+            {
+              "name": "分支名称",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "分支状态",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "分支活跃度",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "合入策略",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "拉取时间",
+              "type": "DATE",
+              "key": false
+            },
+            {
+              "name": "关联项目",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关联版本",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关联单板",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "待合入需求",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "待合入故障",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码链接",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "dnstdio",
+          "fields": [
+            {
+              "name": "AI应用名称",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "AI应用描述",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "AI应用场景",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "AI应用类型",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "AI应用平台",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "团队",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "组件",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否范式",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "key",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "appid",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flask/data/chat.db",
+      "tables": [
+        {
+          "name": "chat_history",
+          "fields": [
+            {
+              "name": "id",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "role",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "content",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "timestamp",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "templates",
+          "fields": [
+            {
+              "name": "id",
+              "type": "INTEGER",
+              "key": true
+            },
+            {
+              "name": "title",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "subtitle",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "content",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "created_at",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "domain",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "team",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "scenario",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "submitter",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "popularity",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "evaluation",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "sqlite_sequence",
+          "fields": [
+            {
+              "name": "name",
+              "type": "",
+              "key": false
+            },
+            {
+              "name": "seq",
+              "type": "",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "chat_list",
+          "fields": [
+            {
+              "name": "request_id",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "session_id",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "model",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "agent",
+              "type": "BOOLEAN",
+              "key": false
+            },
+            {
+              "name": "icenter",
+              "type": "BOOLEAN",
+              "key": false
+            },
+            {
+              "name": "rdc",
+              "type": "BOOLEAN",
+              "key": false
+            },
+            {
+              "name": "think",
+              "type": "BOOLEAN",
+              "key": false
+            },
+            {
+              "name": "role",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "content",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "origin",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "timestamp",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "user",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "knowledge",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "component",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "context",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "prompt",
+          "fields": [
+            {
+              "name": "主题",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "摘要",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "内容",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "场景",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "创建人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "创建时间",
+              "type": "DATETIME",
+              "key": false
+            },
+            {
+              "name": "引用次数",
+              "type": "INTEGER",
+              "key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flask/data/sql_test.db",
+      "tables": [
+        {
+          "name": "testcase",
+          "fields": [
+            {
+              "name": "用例编号",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "用例名称",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "特性",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "功能点",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "测试点",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "预置条件(G)",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "测试步骤(W)",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "预期结果(T)",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "标签",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "优先级",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "测试类型",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "测试分层",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否通用用例",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否异常测试",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否可自动化",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "编写人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "维护人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "用例来源",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "导入路径",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flask/data/feature.db",
+      "tables": [
+        {
+          "name": "feature_board",
+          "fields": [
+            {
+              "name": "feature_name",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "board_name",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "support",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "value",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "feature",
+          "fields": [
+            {
+              "name": "feature_id",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "feature_name",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "feature_function",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "feature_level",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "feature_page",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "domain",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "component",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "review",
+          "fields": [
+            {
+              "name": "标识",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "主题",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "描述",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "开发复盘负责人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "缺陷等级",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现活动",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现方法",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "提交日期",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关闭日期",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点所属领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点所属团队",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "技术根因分析",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入来源",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入点根因一级分类",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入点根因二级分类",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入点根因三级分类",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入gerrit入库链接",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "一级特性",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "二级特性",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点复盘状态",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "最早可拦截阶段",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "自测无法拦截的原因",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码走查未拦截原因",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码走查未拦截原因说明",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否可通过补充代码UT/FT拦截",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否可通过补充仿真FT拦截",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否可通过补充硬件FT/流水线FT拦截",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障定界定位方式",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否需要复现定位或者占用环境定位",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "定位时长",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "控制点复盘状态",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点改进举措",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "控制点改进举措",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障控制点根因一级分类IT",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障控制点根因二级分类IT",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "module",
+          "fields": [
+            {
+              "name": "PN",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "模块类型",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "接口类型",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "速率Mbps",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "距离",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "制造厂商",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "应用代码",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "波长类型",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "物料代码",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "支持单板",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "component",
+          "fields": [
+            {
+              "name": "组件编号",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "组件名称",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "组件类型",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "组件描述",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码目录",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码规模",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码服务器",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "智能体状态",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "团队",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "守护人",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "board",
+          "fields": [
+            {
+              "name": "board_id",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "board_name",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "单板类型",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "产品",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "子架",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "主控",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "子卡",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "交换芯片",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "面板端口",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "转发能力",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "软件平台",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "交叉方式",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "domain",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "update_time",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "update_user",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "PHY芯片",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "时钟芯片",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "内存",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "SDSSD",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "FPGA",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "CPLD",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "FLASH",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "子架EEPROM",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "母板EEPROM",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "boardid",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "functionid",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "sd",
+          "fields": [
+            {
+              "name": "SD类型",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "厂家",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "容量",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "材质",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "接口类型",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "支持主控",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "总写入次数",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "单block大小",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "理论TBW",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "每日写入上限",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "repo",
+          "fields": [
+            {
+              "name": "代码库",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "分支",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "变更次数",
+              "type": "INTEGER",
+              "key": false
+            },
+            {
+              "name": "新增行",
+              "type": "INTEGER",
+              "key": false
+            },
+            {
+              "name": "删除行",
+              "type": "INTEGER",
+              "key": false
+            },
+            {
+              "name": "领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关联故障",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关联组件",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "api",
+          "fields": [
+            {
+              "name": "命令类型",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "命令码",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "命令名称",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "命令来源",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关联特性",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关联命令",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关联组件",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "数据存储",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "处理流程",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "白盒梳理",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "处理规则",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "switch",
+          "fields": [
+            {
+              "name": "型号",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "厂家",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "交换容量",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "端口配置",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "端口容量",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "路由表容量",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "支持主控",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "支持单板",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "phy",
+          "fields": [
+            {
+              "name": "PHY型号",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "厂家",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "端口配置",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "端口类型",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "封装类型",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "速率支持",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "典型特性",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "支持单板",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "clock",
+          "fields": [
+            {
+              "name": "型号",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "厂家",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "支持单板",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flask/data/visit.db",
+      "tables": [
+        {
+          "name": "sqlite_sequence",
+          "fields": [
+            {
+              "name": "name",
+              "type": "",
+              "key": false
+            },
+            {
+              "name": "seq",
+              "type": "",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "visit",
+          "fields": [
+            {
+              "name": "page_now",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "page_before",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "user_id",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "user_agent",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "timestamp",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flask/data/sql_record.db",
+      "tables": [
+        {
+          "name": "table_update_record",
+          "fields": [
+            {
+              "name": "id",
+              "type": "INTEGER",
+              "key": true
+            },
+            {
+              "name": "table_name",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "update_time",
+              "type": "DATETIME",
+              "key": false
+            },
+            {
+              "name": "update_user",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "update_type",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "update_content",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "sqlite_sequence",
+          "fields": [
+            {
+              "name": "name",
+              "type": "",
+              "key": false
+            },
+            {
+              "name": "seq",
+              "type": "",
+              "key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flask/data/sql_rdc.db",
+      "tables": [
+        {
+          "name": "mr",
+          "fields": [
+            {
+              "name": "id",
+              "type": "TEXT",
+              "key": true
+            }
+          ]
+        },
+        {
+          "name": "pr",
+          "fields": [
+            {
+              "name": "id",
+              "type": "TEXT",
+              "key": true
+            }
+          ]
+        },
+        {
+          "name": "story",
+          "fields": [
+            {
+              "name": "id",
+              "type": "TEXT",
+              "key": true
+            }
+          ]
+        },
+        {
+          "name": "task",
+          "fields": [
+            {
+              "name": "id",
+              "type": "TEXT",
+              "key": true
+            }
+          ]
+        },
+        {
+          "name": "review",
+          "fields": [
+            {
+              "name": "标识",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "主题",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "描述",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "开发复盘负责人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "缺陷等级",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现活动",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现方法",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "提交日期",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关闭日期",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点所属领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点所属团队",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "技术根因分析",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入来源",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入点根因一级分类",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入点根因二级分类",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入点根因三级分类",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入gerrit入库链接",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "一级特性",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "二级特性",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点复盘状态",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "最早可拦截阶段",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "自测无法拦截的原因",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码走查未拦截原因",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码走查未拦截原因说明",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否可通过补充代码UT/FT拦截",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否可通过补充仿真FT拦截",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否可通过补充硬件FT/流水线FT拦截",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障定界定位方式",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否需要复现定位或者占用环境定位",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "定位时长",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "控制点复盘状态",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点改进举措",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "控制点改进举措",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障控制点根因一级分类IT",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障控制点根因二级分类IT",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "issue",
+          "fields": [
+            {
+              "name": "标识",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "标题",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "描述",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "状态",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "变更大类",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "缺陷等级",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "缺陷来源",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现活动",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现方法",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现版本",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "创建时间",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关闭时间",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "所属产品",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "所属项目",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "团队",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入人部门",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现人部门",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "进展",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "备注",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "计划解决日期",
+              "type": "DATE",
+              "key": false
+            },
+            {
+              "name": "自测报告链接",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flask/data/sql_task.db",
+      "tables": [
+        {
+          "name": "task",
+          "fields": [
+            {
+              "name": "id",
+              "type": "INTEGER",
+              "key": true
+            },
+            {
+              "name": "标识",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "标题",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "描述",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "状态",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "指派给",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "团队",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        },
+        {
+          "name": "sqlite_sequence",
+          "fields": [
+            {
+              "name": "name",
+              "type": "",
+              "key": false
+            },
+            {
+              "name": "seq",
+              "type": "",
+              "key": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "flask/data/rdc.db",
+      "tables": [
+        {
+          "name": "bug_table",
+          "fields": [
+            {
+              "name": "标识",
+              "type": "TEXT",
+              "key": true
+            },
+            {
+              "name": "主题",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "描述",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "开发复盘负责人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "缺陷等级",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现活动",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "发现方法",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "提交日期",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "关闭日期",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入人",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点所属领域",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点所属团队",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "技术根因分析",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入来源",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入点根因一级分类",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入点根因二级分类",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入点根因三级分类",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障引入gerrit入库链接",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "一级特性",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "二级特性",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点复盘状态",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "最早可拦截阶段",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "自测无法拦截的原因",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码走查未拦截原因",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "代码走查未拦截原因说明",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否可通过补充代码UT/FT拦截",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否可通过补充仿真FT拦截",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否可通过补充硬件FT/流水线FT拦截",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "故障定界定位方式",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "是否需要复现定位或者占用环境定位",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "定位时长",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "控制点复盘状态",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "引入点改进举措",
+              "type": "TEXT",
+              "key": false
+            },
+            {
+              "name": "控制点改进举措",
+              "type": "TEXT",
+              "key": false
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

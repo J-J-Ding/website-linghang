@@ -1,0 +1,447 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>领航智研平台 - AI提效专家</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+        color: #333;
+        line-height: 1.6;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 50px;
+        padding: 20px;
+        animation: fadeIn 1s ease;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin-bottom: 20px;
+      }
+
+      .logo-icon {
+        background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .logo-icon i {
+        font-size: 28px;
+        color: white;
+      }
+
+      h1 {
+        font-size: 2.8rem;
+        background: linear-gradient(135deg, #182848 0%, #4b6cb7 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 10px;
+        font-weight: 700;
+      }
+
+      .subtitle {
+        font-size: 1.2rem;
+        color: #5a6b8c;
+        max-width: 700px;
+        margin: 0 auto 30px;
+      }
+
+      .platform-url {
+        display: inline-block;
+        background: #ffffff;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        color: #4b6cb7;
+        text-decoration: none;
+        box-shadow: 0 4px 15px rgba(75, 108, 183, 0.2);
+        transition: all 0.3s ease;
+        margin-top: 15px;
+      }
+
+      .platform-url:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(75, 108, 183, 0.3);
+        background: #4b6cb7;
+        color: white;
+      }
+
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 30px;
+        margin-bottom: 50px;
+      }
+
+      .feature-card {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+      }
+
+      .card-header {
+        padding: 25px 25px 15px;
+        border-bottom: 1px solid #f0f4f8;
+      }
+
+      .card-header h2 {
+        font-size: 1.5rem;
+        color: #182848;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .card-header h2 i {
+        background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      .card-body {
+        padding: 25px;
+        flex-grow: 1;
+      }
+
+      .feature-steps {
+        margin: 20px 0;
+        padding-left: 20px;
+      }
+
+      .feature-steps li {
+        margin-bottom: 12px;
+        position: relative;
+        padding-left: 25px;
+      }
+
+      .feature-steps li:before {
+        content: '→';
+        position: absolute;
+        left: 0;
+        color: #4b6cb7;
+        font-weight: bold;
+      }
+
+      .feature-image {
+        height: 200px;
+        background: #f8fafd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-top: 1px solid #f0f4f8;
+      }
+
+      .feature-image img {
+        max-width: 85%;
+        max-height: 85%;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+      }
+
+      .feature-card:hover .feature-image img {
+        transform: scale(1.03);
+      }
+
+      .card-footer {
+        padding: 20px 25px;
+        background: #f9fbfd;
+        border-top: 1px solid #f0f4f8;
+        text-align: center;
+      }
+
+      .feature-link {
+        display: inline-block;
+        padding: 10px 25px;
+        background: #4b6cb7;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .feature-link:hover {
+        background: #182848;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(24, 40, 72, 0.3);
+      }
+
+      .future-section {
+        background: white;
+        border-radius: 16px;
+        padding: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        margin-top: 30px;
+      }
+
+      .future-section h2 {
+        font-size: 1.8rem;
+        color: #182848;
+        margin-bottom: 25px;
+        text-align: center;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f4f8;
+      }
+
+      .future-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+      }
+
+      .future-item {
+        background: #f8fafd;
+        padding: 20px;
+        border-radius: 12px;
+        border-left: 4px solid #4b6cb7;
+      }
+
+      .future-item h3 {
+        color: #182848;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .future-item p {
+        color: #5a6b8c;
+        font-size: 0.95rem;
+      }
+
+      .priority {
+        background: #fff8f0;
+        border-left-color: #ff9a3d;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 50px;
+        padding: 20px;
+        color: #5a6b8c;
+        font-size: 0.9rem;
+      }
+
+      .update-time {
+        background: white;
+        display: inline-block;
+        padding: 8px 20px;
+        border-radius: 50px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        margin-top: 15px;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .feature-card:nth-child(1) {
+        animation: fadeIn 0.6s ease;
+      }
+
+      .feature-card:nth-child(2) {
+        animation: fadeIn 0.8s ease;
+      }
+
+      .feature-card:nth-child(3) {
+        animation: fadeIn 1s ease;
+      }
+
+      @media (max-width: 768px) {
+        .features {
+          grid-template-columns: 1fr;
+        }
+
+        h1 {
+          font-size: 2.2rem;
+        }
+
+        .container {
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <div class="logo">
+          <div class="logo-icon">
+            <i class="fas fa-rocket"></i>
+          </div>
+          <h1>领航AI数字研发平台</h1>
+        </div>
+        <p class="subtitle">AI驱动的研发平台，提升研发效率，加速创新进程</p>
+        <a href="http://10.239.69.30:3002/ai/chat" class="platform-url">
+          <i class="fas fa-external-link-alt"></i> 立即体验: http://10.239.69.30:3002/ai/chat
+        </a>
+      </header>
+
+      <div class="features">
+        <!-- 功能1 -->
+        <div class="feature-card">
+          <div class="card-header">
+            <h2><i class="fas fa-tasks"></i> 任务批量处理功能</h2>
+            <p>高效处理重复性任务，提升工作效率</p>
+          </div>
+          <div class="card-body">
+            <ul class="feature-steps">
+              <li>在模版中心新建模版</li>
+              <li>自定义批量任务模版</li>
+              <li>选择任务智能体执行批量任务</li>
+            </ul>
+            <p>通过标准化模板和智能体协作，实现任务的自动化批量处理，节省大量手动操作时间。</p>
+          </div>
+          <div class="feature-image">
+            <img
+              src="https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+              alt="任务批量处理功能"
+            />
+          </div>
+          <div class="card-footer">
+            <a
+              href="https://i.zte.com.cn/index/ispace/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/b7c4ece909074bb7869f6b67921348fb/view"
+              class="feature-link"
+              >查看操作指南</a
+            >
+          </div>
+        </div>
+
+        <!-- 功能2 -->
+        <div class="feature-card">
+          <div class="card-header">
+            <h2><i class="fas fa-link"></i> 引用icenter功能</h2>
+            <p>快速引用知识库内容，提升协作效率</p>
+          </div>
+          <div class="card-body">
+            <ul class="feature-steps">
+              <li>选择引用icenter功能</li>
+              <li>输入页面链接</li>
+              <li>添加操作提示词完成引用</li>
+            </ul>
+            <p>无缝连接企业知识库，快速引用文档内容，保持知识一致性和可追溯性。</p>
+          </div>
+          <div class="feature-image">
+            <img
+              src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+              alt="引用icenter功能"
+            />
+          </div>
+          <div class="card-footer">
+            <a href="#" class="feature-link">查看操作指南</a>
+          </div>
+        </div>
+
+        <!-- 功能3 -->
+        <div class="feature-card">
+          <div class="card-header">
+            <h2><i class="fas fa-book"></i> 引用rdc功能</h2>
+            <p>便捷引用研发文档，规范研发流程</p>
+          </div>
+          <div class="card-body">
+            <ul class="feature-steps">
+              <li>选择引用rdc功能</li>
+              <li>输入rdc编号</li>
+              <li>添加操作提示词完成引用</li>
+            </ul>
+            <p>一键引用研发设计文档，确保研发过程符合规范要求，提高研发质量。</p>
+          </div>
+          <div class="feature-image">
+            <img
+              src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+              alt="引用rdc功能"
+            />
+          </div>
+          <div class="card-footer">
+            <a href="#" class="feature-link">查看操作指南</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="future-section">
+        <h2><i class="fas fa-road"></i> 即将推出的功能</h2>
+        <div class="future-grid">
+          <div class="future-item priority">
+            <h3><i class="fas fa-star"></i> 自定义多步骤任务处理</h3>
+            <p>创建复杂的多步骤任务处理流程，满足高级自动化需求</p>
+          </div>
+          <div class="future-item priority">
+            <h3><i class="fas fa-star"></i> AI应用批量任务处理</h3>
+            <p>集成AI应用，实现更智能的批量任务处理能力</p>
+          </div>
+          <div class="future-item">
+            <h3><i class="fas fa-plus-circle"></i> 提示词模版管理</h3>
+            <p>新增和修改提示词模版，个性化您的AI体验</p>
+          </div>
+          <div class="future-item">
+            <h3><i class="fas fa-code"></i> 编码规范知识库</h3>
+            <p>集成编码规范知识库，提升代码质量和一致性</p>
+          </div>
+          <div class="future-item">
+            <h3><i class="fas fa-file-upload"></i> 文件上传功能</h3>
+            <p>支持文件上传，扩展数据处理能力</p>
+          </div>
+          <div class="future-item">
+            <h3><i class="fas fa-comments"></i> 新对话功能提示页</h3>
+            <p>优化对话体验，提供更友好的用户引导</p>
+          </div>
+        </div>
+      </div>
+
+      <footer>
+        <p>领航智研平台 - 让AI赋能研发，加速创新</p>
+        <div class="update-time"><i class="far fa-clock"></i> 最后更新: 2025-06-03 14:18:24</div>
+      </footer>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,660 @@
+文件名：sspPortGhao.h
+```c
+/*============================================================================*/
+/*  版权声明 : Copyright (c) 1998-2008 中兴通讯股份有限公司传输北京软件开发部 */
+/*  系统名称 : ZXONE 8600光传输系统                                           */
+/*  文 件 名 : sspPortGhao.h                                                      */
+/*  功能描述 :                                                                */
+/*  创 建 人 : liuxi                                                         */
+/*  文件版本 : p02                                                            */
+/*  创建日期 : 2011.11.17                                                      */
+/*============================================================================*/
+/*  修改记录                                                                  */
+/*  日期         版本            修改人          修改摘要                     */
+/*============================================================================*/
+#ifndef _SSPPORTGHAO_H
+#define _SSPPORTGHAO_H
+
+/*============================================================================*/
+/* 包含的标准库或者其他非标准库头文件                                         */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 常量定义                                                                   */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 全局宏                                                                     */
+/*============================================================================*/
+#define LINE_PORT_HIGH_8          0xB1    /* 内部以太网双向端口高8位 */
+
+#define SSP_DEVICE_127_OSU_ID_MAX 583    /* 内部口127负载最大端口号 147-583 */
+#define SSP_DEVICE_OSU_ID_MAX     1020   /* OSU最大id */
+#define IP_RATE_CONVERT           10400  /* 目前N制转换为N 1=10.4M */
+#define LINE_PORT_DEFAULT_N       1000   /* 默认N值 */
+#define LINE_PORT_DEFAULT_CBS     640    /* 默认CBS */
+
+#define EV_CP_OSU_BW_ADJ      1           /* osu带宽调整内部消息号 */
+#define EV_CP_VCG_BW_ADJ      5           /* vcg带宽调整内部消息号 */
+#define SENT_TO_OTN_MSG_ID    0xa0018d38  /* L2发送给L1的消息id */
+#define SENT_TO_OTN_JOB_TYPE  0xA4BA      /* L2发送给L1的job类型 */
+
+/* 内部口创建删除标志 */
+typedef enum
+{
+    F508_IP_CMDACT_ADD = 2,  /* 增加 */
+    F508_IP_CMDACT_DEL = 4   /* 删除 */
+} T_F508_ACT;
+
+/* 内部口创建删除标志 */
+typedef enum
+{
+    PORT_LINE_ACT_ADD = 0,  /* 增加 */
+    PORT_LINE_ACT_DEL = 1,  /* 删除 */
+    PORT_LINE_ACT_MOD = 2   /* 修改 */
+} T_LINE_PORT_ACT;
+
+/* IP定位信息变化标志 */
+typedef enum
+{
+    SSP_IP_POS_INFO_ADD = 0,  /* 增加 */
+    SSP_IP_POS_INFO_DEL = 1   /* 删除 */
+} T_SSP_IP_POS_INFO_FLAG;
+/*============================================================================*/
+/* 全局数据类型                                                               */
+/*============================================================================*/
+typedef struct
+{
+    UINT16 m_usNMPort; /* 网管端口号 */
+    UINT16 m_usOsuId;  /* OSU ID */
+    UINT16 m_usNValue; /* N值 */
+
+}SSP_PORT_LINE_CFG_S;
+
+/*============================================================================*/
+/* 类定义                                                                     */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 全局函数原型                                                               */
+/*============================================================================*/
+INT32 sspLinePortSpeedCalc(UINT16 usCmdAct, SSP_PORT_LINE_CFG_S *ptLinePortCfg, UINT16 *usPortId, UINT32 *ulCir, UINT16 *usAct);
+INT32 sspLinePortSet(UINT16 usPortId, UINT32 ulCir, UINT16 usAct);
+
+
+#endif
+```
+
+文件名：sspPortGhao.c
+```c
+/*============================================================================*/
+/*  版权声明 : Copyright (c) 1998-2008 中兴通讯股份有限公司传输北京软件开发部 */
+/*  系统名称 : ZXONE 8600光传输系统                                           */
+/*  文 件 名 : sspPortGhao.c                                                  */
+/*  功能描述 :                                                                */
+/*  创 建 人 : 刘冠葳                                                         */
+/*  文件版本 : p02                                                            */
+/*  创建日期 : 2010.9.26                                                      */
+/*============================================================================*/
+/*  修改记录                                                                  */
+/*  日期         版本            修改人          修改摘要                     */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 包含的标准库或者其他非标准库头文件                                         */
+/*============================================================================*/
+/* include*/
+#include "stdtype.h"
+#include "cmd_manager.h"
+#include "uapi_interface.h"
+/* frm */
+#include "l2_common.h"
+#include "sspErrorNo.h"
+#include "sspSyslog.h"
+/* supp */
+#include "sspDevice.h"
+#include "sspPortPhyApi.h"
+#include "sspHwAdapterApi.h"
+/* plat */
+#include "sspL2PerfAlmOuterApi.h"
+#include "cmd_manager_outapi.h"
+/* plat/port */
+#include "sspPortApi.h"
+#include "sspPortPerfAlm.h"
+#include "sspPortGhao.h"
+
+/*============================================================================*/
+/* 本文件使用的常量定义                                                       */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 本文件使用的宏定义                                                         */
+/*============================================================================*/
+#define UAPI_OBJECT_ATTRID_IF_NAME       66  /* VCGEI接口名称和编号 属性ID */
+#define UAPI_OBJECT_ATTRID_IF_BANDWIDTH  2   /* BS_EOS根据有效VC通道计算带宽, 单位k 属性ID */
+#define INNER_PORT_LEN                   31  /* VCGEI接口名称和编号 长度 */
+
+#define L1_SPEED_KBPS_VC12 2040
+#define L1_SPEED_KBPS_VC4  142800
+
+#define VC12_SPEED_INCREASE 10
+#define VC4_SPEED_INCREASE  70
+/*============================================================================*/
+/* 本文件使用的数据类型                                                       */
+/*============================================================================*/
+typedef struct
+{
+    UINT32 m_ulFlag;  /* 标记位，该端口是否设置成功 */
+    UINT32 m_ulKbps;  /* 占用时隙数≈物理带宽 */
+
+}SSP_PORT_LINE_STATUS_S;
+
+typedef struct
+{
+    UINT16  err_code;  /* 0 成功， 非0失败 */
+    UINT16  msg_type;  /* 内部消息号 */
+    UINT32  msg_len;   /* 不包括通用消息头的其他消息体长度，可能用不上 */
+    UINT8   res[4];    /* 保留字段 */
+
+}OMsgHeadL1AndL2; //通用消息头
+
+/*L2接收L1消息*/
+typedef struct
+{
+    UINT32 p_osu_no;    /* ftp端口号， inner_eth_no */
+    UINT32 osu_id;      /* osu_id */
+    UINT8  nod_pos;     /* 节点类型，首节点，尾节点；0-首节点，1-中间节点，2-尾节点；只能是首尾节点；---- OsuBwAdjNodePos */
+    UINT8  bw_adj_op;   /* 增加、减少;  0-增加，1-减少; 2-回滚;  ----- OsuBwAdjOp */
+    UINT32 exp_adj_bw;  /* 调整OSU带宽 */
+
+}OsuBwAdjToL2info; //L1ToL2
+
+typedef struct
+{
+    OMsgHeadL1AndL2   msg_head;    /* 通用消息头 */
+    OsuBwAdjToL2info  osu_bw_adj;  /* OSU调整信息 */
+
+}MsgOsuBwAdjToL2;
+
+/*L2应答L1*/
+typedef struct
+{
+    UINT32 p_osu_no;  /* ftp端口号, inner_eth_no */
+    UINT32 osu_id;    /* osu_id */
+
+}OsuBwAdjL2AckL1info; //L2应答L1
+
+typedef struct
+{
+    OMsgHeadL1AndL2      msg_head;       /* 通用消息头 */
+    OsuBwAdjL2AckL1info  osu_bw_adj_ack; /* OSU应答信息 */
+
+}MsgOsuBwAdjToL1;
+
+typedef struct Uapi_ObjectF458Attr
+{
+    char    m_ifName[INNER_PORT_LEN];  //66 VCGEI接口名称和编号, 同oid32240
+    UINT32  m_bandwidth;               //2  BS_EOS根据有效VC通道计算带宽, 单位k
+
+}Uapi_ObjectF458Attr;
+
+/*============================================================================*/
+/* 全局变量                                                                   */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 全局函数                                                                   */
+/*============================================================================*/
+UINT16 g_IPortgOsuId[SSP_DEVICE_OSU_ID_MAX] = {0};
+
+/*============================================================================*/
+/* 本文件使用的变量                                                           */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 局部函数的实现                                                             */
+/*============================================================================*/
+/**
+ * @brief 将GHao协议端口号转换为系统内部端口号
+ *
+ * @param usPort GHao协议格式的4字节端口号
+ * @return UINT16 转换后的系统内部端口号，无效返回PORT_INVALID
+ */
+UINT16 sspNMGHaoPort2SwitchPort(UINT32 usPort)//用于ghao解析接收自L1的4字节端口号
+{
+    UINT8  ucHighValue = 0;          /*端口号的高8位*/
+    UINT8  ucLowValue = 0;           /*端口号的低8位*/
+    UINT16 usL2Port = 0;            /* 二层端口号 */
+
+    ucHighValue  = (usPort & 0xFFFF0000) >> 16;
+    ucLowValue   = usPort & 0x0000FFFF;
+
+    if(ucHighValue == LINE_PORT_HIGH_8)
+    {
+        usL2Port = SSP_DEVICE_LINE_MIN + ucLowValue - 1;
+        if((usL2Port > SSP_DEVICE_OSU_LINE_MAX) || (usL2Port < SSP_DEVICE_LINE_MIN))
+        {
+            usL2Port = PORT_INVALID;
+            return usL2Port;
+        }
+        return usL2Port;
+    }
+
+    return PORT_INVALID;
+}
+
+/* Started by AICoder, pid:v54d2g87f88afe0143680b91f042e02853894d0e */
+/**
+ * @brief 计算线路端口速率参数
+ *
+ * @param usCmdAct 操作类型：F508_IP_CMDACT_DEL/F508_IP_CMDACT_ADD
+ * @param ptLinePortCfg 端口配置结构指针
+ * @param usPortId 输出端口号
+ * @param ulCir 输出承诺信息速率（kbps）
+ * @param usAct 输出操作动作类型
+ * @return INT32 执行结果：SSP_OK成功，其他值失败
+ */
+INT32 sspLinePortSpeedCalc(UINT16 usCmdAct, SSP_PORT_LINE_CFG_S *ptLinePortCfg, UINT16 *usPortId, UINT32 *ulCir, UINT16 *usAct)
+{
+    switch (usCmdAct)
+    {
+        case F508_IP_CMDACT_DEL:
+        {
+            g_IPortgOsuId[ptLinePortCfg->m_usNMPort] = 0;
+            *ulCir = LINE_PORT_DEFAULT_N * IP_RATE_CONVERT;  /*删除时将限速值恢复为带宽最大值10G*/
+            *usAct = PORT_LINE_ACT_DEL;
+            break;
+        }
+        case F508_IP_CMDACT_ADD:
+        {
+            g_IPortgOsuId[ptLinePortCfg->m_usNMPort] = ptLinePortCfg->m_usOsuId;
+            *ulCir = ptLinePortCfg->m_usNValue * IP_RATE_CONVERT; /*10400 目前N制转换为N 1=10.4M*/
+            *usAct = PORT_LINE_ACT_ADD;
+            break;
+        }
+        default:
+        {
+            PORT_LOG_ERR("cmd_type %d error!", usCmdAct);
+            return SSP_ERROR;
+        }
+    }
+
+    *usPortId = ptLinePortCfg->m_usNMPort + (SSP_DEVICE_LINE_MIN - 1);
+    PORT_LOG_NOTICE("Calc F508 Act %d, Cir %d, Port %d!", *usAct, *ulCir, *usPortId);
+    return SSP_OK;
+}
+/* Ended by AICoder, pid:v54d2g87f88afe0143680b91f042e02853894d0e */
+
+/**
+ * @brief 设置线路端口服务属性
+ *
+ * @param usPort 端口号
+ * @param usCmdAct 操作动作类型
+ * @return STATUS 执行状态：SSP_OK成功，其他值失败
+ */
+STATUS LinePortSvcAttrSet(UINT16 usPort, UINT16 usCmdAct)
+{
+    STATUS iRet = SSP_OK;
+
+    if ((PORT_LINE_ACT_ADD == usCmdAct) || (PORT_LINE_ACT_DEL == usCmdAct))
+    {
+        iRet = ServiceApp_SetLinePortSvcAttrInit(usPort);
+        if(SSP_OK != iRet)
+        {
+            PORT_LOG_ERR("Recover Line Port %d SVCAttr failed! Error code: %d", usPort, iRet);
+            return SSP_ERROR;
+        }
+        PORT_LOG_NOTICE("Line Port %d recover svc attr!", usPort);
+    }
+
+    return SSP_OK;
+}
+
+/* Started by AICoder, pid:w6b75ad32bp2dce148a8095820debf3461a18c0a */
+/**
+ * @brief 设置线路端口整形参数
+ *
+ * @param usPort 端口号
+ * @param ulCir 承诺信息速率（kbps）
+ * @param usCmdAct 操作动作类型
+ * @return STATUS 执行状态：SSP_OK成功，其他值失败
+ */
+STATUS sspLinePortSet(UINT16 usPort, UINT32 ulCir, UINT16 usCmdAct)
+{
+    STATUS iRet = SSP_OK;
+    QOS_TRAFFIC_LIMIT pQosNodeSharpping = {0};
+
+    if (SSP_IP_POS_INFO_DEL == usCmdAct)
+    {
+        pQosNodeSharpping.m_enable = ENUM_EGRESS_PORT_FLOW_CONTROL_DISABLE;
+    }
+    else
+    {
+        pQosNodeSharpping.m_enable = ENUM_EGRESS_PORT_FLOW_CONTROL_ENABLE;
+    }
+    pQosNodeSharpping.m_cir = ulCir;
+    pQosNodeSharpping.m_cbs = LINE_PORT_DEFAULT_CBS;
+
+    if((usPort >= SSP_DEVICE_LINE_MIN) && (usPort <= SSP_DEVICE_LINE_MAX))
+    {
+        iRet = Supp_SetPortEgressShaper(usPort, &pQosNodeSharpping);
+        if(SSP_OK != iRet)
+        {
+            PORT_LOG_ERR("Set Line Port shaping failed! Error code: %d", iRet);
+            return SSP_ERROR;
+        }
+        sspLinePortBandwidthSet(usPort, ulCir);
+        /*L2内部端口号从21开始，性能上报时从1开始*/
+        sspLinePortChgReport((usPort - SSP_DEVICE_LINE_MIN + 1), usCmdAct);
+        iRet = LinePortSvcAttrSet(usPort, usCmdAct);
+        if(SSP_OK != iRet)
+        {
+            PORT_LOG_ERR("Line Port %d SVCAttr act %d failed!", usPort, usCmdAct);
+            return SSP_ERROR;
+        }
+    }
+
+    return SSP_OK;
+}
+/* Ended by AICoder, pid:w6b75ad32bp2dce148a8095820debf3461a18c0a */
+
+/* Started by AICoder, pid:a7a75g27eb5721e146e109b550239a2f5e62e4b0 */
+/**
+ * @brief 向OTN模块发送OSU带宽调整应答消息
+ *
+ * @param AckMsg 应答消息缓冲区
+ * @param usPortId 端口号
+ * @param bFlag 状态标志：SSP_TRUE/SPP_FALSE
+ */
+void sspOSUSentMsgToOTN(BYTE *AckMsg, UINT32 usPortId, T_SSP_BOOL bFlag)
+{
+    INT32         iRtn = SSP_OK;
+    T_LogicalAddr tLogicAddrL2 = {0};
+
+    PORT_LOG_NOTICE("sspOSUSentMsgToOTN: Send GHAO Ack Msg to OTN! Port %d is %s",
+                    usPortId, (bFlag == SSP_TRUE) ? "SF" : "SF-CLEAR");
+
+    SetAPPLogicAddr(&tLogicAddrL2);
+
+    iRtn = Osu_ForwardScmd(SENT_TO_OTN_JOB_TYPE, SENT_TO_OTN_MSG_ID, AckMsg, sizeof(MsgOsuBwAdjToL2), &tLogicAddrL2);
+    if(SSP_OK != iRtn)
+    {
+        PORT_LOG_ERR("sspOSUSentMsgToOTN: msgid=%d, GHAO SendAsynMsg to OTN error", usPortId);
+    }
+    else
+    {
+        PORT_LOG_NOTICE("sspOSUSentMsgToOTN: msgid=%d, GHAO SendAsynMsg to OTN ok", usPortId);
+    }
+
+    return;
+}
+/* Ended by AICoder, pid:a7a75g27eb5721e146e109b550239a2f5e62e4b0 */
+
+/* Started by AICoder, pid:a5bdfdc329of0f414c0e0a92c024d3581ae6fae0 */
+/**
+ * @brief 处理接收的OSU带宽调整消息
+ *
+ * @param pMsgBody 消息体指针
+ * @return INT32 执行结果：SSP_OK成功，其他值失败
+ */
+INT32 RecvOsuWidthMsg(VOID *pMsgBody)
+{
+    INT32 iRet = SSP_OK;
+    UINT32 usPortNo = 0;
+    UINT32 usOsuNo = 0;
+    UINT32 usAdjBw = 0;
+    UINT32 usOsuId = 0;
+    UINT32 usNodPos = 0;
+    T_SSP_BOOL bFlag = 1;
+    MsgOsuBwAdjToL1  *OsuBwAckMsg = NULL;
+    MsgOsuBwAdjToL2  *OsuBwAdjMsg = NULL;
+    OsuBwAdjToL2info  OsuBwAdjInfo = {0};
+
+    if(NULL == pMsgBody)
+    {
+        PORT_LOG_ERR("pMsgBody is NULL!");
+        return SSP_ERROR;
+    }
+
+    OsuBwAdjMsg = (MsgOsuBwAdjToL2 *)((MsgOsuBwAdjToL2 *)pMsgBody);
+    OsuBwAdjInfo = OsuBwAdjMsg->osu_bw_adj;
+    usOsuNo = OsuBwAdjInfo.p_osu_no;
+    usAdjBw = OsuBwAdjInfo.exp_adj_bw;
+    usOsuId = OsuBwAdjInfo.osu_id;
+    usNodPos = OsuBwAdjInfo.nod_pos;
+    usPortNo = sspNMGHaoPort2SwitchPort(usOsuNo);
+
+    PORT_LOG_NOTICE("usPortNo:%d-%d,usAdjBw:%d,usOsuId:%d", usOsuNo, usPortNo, usAdjBw, usOsuId);
+
+    if (0 == usNodPos)
+    {
+        iRet = sspLinePortSet((UINT16)usPortNo, usAdjBw, SSP_IP_POS_INFO_ADD);
+        if(SSP_OK != iRet)
+        {
+            bFlag = 0;
+            PORT_LOG_ERR("sspLinePortSet error");
+        }
+    }
+
+    OsuBwAckMsg = (MsgOsuBwAdjToL1 *)sspMalloc(sizeof(MsgOsuBwAdjToL1));
+    if(NULL == OsuBwAckMsg)
+    {
+        PORT_LOG_ERR("OsuBwAckMsg malloc FAIL!");
+        return SSP_ERROR;
+    }
+
+    SSP_MEMSET(OsuBwAckMsg, sizeof(MsgOsuBwAdjToL1), 0, sizeof(MsgOsuBwAdjToL1));
+    OsuBwAckMsg->msg_head.msg_type = 1;
+    OsuBwAckMsg->msg_head.err_code = 0;
+    OsuBwAckMsg->osu_bw_adj_ack.osu_id = usOsuId;
+    OsuBwAckMsg->osu_bw_adj_ack.p_osu_no = usOsuNo;
+    sspOSUSentMsgToOTN((BYTE *)OsuBwAckMsg, usPortNo, bFlag);
+
+    sspFree(OsuBwAckMsg);
+
+    return iRet;
+}
+/* Ended by AICoder, pid:a5bdfdc329of0f414c0e0a92c024d3581ae6fae0 */
+
+/* Started by AICoder, pid:n65c4a02e9v77fe142880b93a0d2c9487a04ce7f */
+/**
+ * @brief 解析端口名称字符串中的端口号
+ *
+ * @param ifName 接口名称字符串（如"VCG-0/1/2"）
+ * @return UINT16 解析出的端口号，无效返回0
+ */
+static UINT16 ParsePortNumber(const CHAR *ifName)
+{
+    const CHAR *pDash = NULL;
+    const CHAR *pSlash = NULL;
+
+    if (ifName == NULL)
+    {
+        return 0;
+    }
+
+    /* 查找最后一个'-'的位置 */
+    pDash = strrchr(ifName, '-');
+    if (pDash == NULL)
+    {
+        return 0;
+    }
+
+    /* 在'-'之后查找最后一个'/' */
+    pSlash = strrchr(pDash, '/');
+    if (pSlash == NULL)
+    {
+        return 0;
+    }
+
+    /* 转换最后部分为数字 */
+    char *endPtr = NULL;
+    errno = 0;
+    long num = strtol(pSlash + 1, &endPtr, 10);
+
+    /* 错误检查 */
+    if (errno != 0 || endPtr == pSlash + 1 || *endPtr != '\0')
+    {
+        return 0;  // 无效格式返回0
+    }
+
+    /* 范围检查 */
+    if (num < 0 || num > SSP_DEVICE_LINE_NUM)
+    {
+        return 0;
+    }
+
+    return (UINT16)num;
+}
+/* Ended by AICoder, pid:n65c4a02e9v77fe142880b93a0d2c9487a04ce7f */
+
+/* Started by AICoder, pid:41009ldb456c46014ada09cb709195189bb5da8a */
+/**
+ * @brief 转换UAPI动作类型到系统内部动作类型
+ *
+ * @param original_act 原始动作类型
+ * @return UINT16 转换后的动作类型
+ */
+static UINT16 ConvertActionType(UINT16 original_act)
+{
+    switch (original_act)
+    {
+        case UAPI_ACT_CREATE:  // 原始创建动作转换为添加
+            return PORT_LINE_ACT_ADD;
+        case UAPI_ACT_DELETE:  // 原始删除动作转换为删除
+            return PORT_LINE_ACT_DEL;
+        case UAPI_ACT_SET:     // 原始设置动作转换为修改
+            return PORT_LINE_ACT_MOD;
+        default:
+            PORT_LOG_ERR("Invalid action type: %u", original_act);
+            return original_act;  // 保留原始值或根据需求返回错误码
+    }
+}
+/* Ended by AICoder, pid:41009ldb456c46014ada09cb709195189bb5da8a */
+
+/* Started by AICoder, pid:r1009jdb45cc46014ada09cb709195689bb1da8a */
+/**
+ * @brief 处理接收的VCG带宽调整消息
+ *
+ * @param pMsgBody 消息体指针
+ * @return INT32 执行结果：SSP_OK成功，其他值失败
+ */
+INT32 RecvVcgWidthMsg(VOID *pMsgBody)
+{
+    INT32 iRet = SSP_OK;
+    UINT16 obj_num = 0;
+    UINT32 obj_index = 0;
+    UINT16 obj_act = 0;
+    UINT16 usPort = 0;
+    void *VcgMsg = NULL;
+    Uapi_ObjectInfo *p_obj = NULL;
+    Uapi_AttrInfo *p_attr = NULL;
+    Uapi_ObjectF458Attr tUobject_attr = {0};
+    UINT16 converted_act = 0;  // 初始化为0
+
+    VcgMsg = (void *)((UINT8 *)pMsgBody + sizeof(OMsgHeadL1AndL2));
+    obj_num = UAPI_UMSG_GETOBJACTNUM(VcgMsg);
+    PORT_LOG_ERR("F458 obj_num= %d", obj_num);
+
+    for (obj_index = 1; obj_index <= obj_num; obj_index++)
+    {
+        p_obj = UAPI_UMSG_GETOBJACT_BYSEQ(VcgMsg, obj_index);
+        obj_act = UAPI_UOBJACT_GETACTTYPE(p_obj);
+        PORT_LOG_ERR("VCG act = %d", obj_act);
+
+        /* 获取接口名称属性 */
+        p_attr = UAPI_UOBJACT_GETATTR_BYID(p_obj, UAPI_OBJECT_ATTRID_IF_NAME);
+        if (NULL != p_attr)
+        {
+            SSP_MEMCPY(tUobject_attr.m_ifName, INNER_PORT_LEN,
+                      p_attr->data, CPU_SWAP_32(p_attr->data_len));
+
+            /* 解析端口号 */
+            usPort = ParsePortNumber(tUobject_attr.m_ifName);
+
+            PORT_LOG_ERR("Parsed port number: %s -> %u",
+                         tUobject_attr.m_ifName, usPort);
+        }
+
+        /* 获取带宽属性 */
+        p_attr = UAPI_UOBJACT_GETATTR_BYID(p_obj, UAPI_OBJECT_ATTRID_IF_BANDWIDTH);
+        if (NULL != p_attr)
+        {
+            SSP_MEMCPY(&tUobject_attr.m_bandwidth, sizeof(UINT32),
+                      p_attr->data, CPU_SWAP_32(p_attr->data_len));
+            tUobject_attr.m_bandwidth = CPU_SWAP_32(tUobject_attr.m_bandwidth);
+            if (tUobject_attr.m_bandwidth < L1_SPEED_KBPS_VC4)
+            {
+                tUobject_attr.m_bandwidth += tUobject_attr.m_bandwidth/VC12_SPEED_INCREASE;
+            }
+            else
+            {
+                tUobject_attr.m_bandwidth += tUobject_attr.m_bandwidth/VC4_SPEED_INCREASE;
+            }
+            PORT_LOG_ERR("VCG bandwidth = %d", tUobject_attr.m_bandwidth);
+        }
+
+        /* 转换动作类型并设置端口参数 */
+        converted_act = ConvertActionType(obj_act);
+        iRet = sspLinePortSet(usPort + SSP_DEVICE_LINE_MIN - 1,
+                             tUobject_attr.m_bandwidth,
+                             converted_act);
+        if(SSP_OK != iRet)
+        {
+            PORT_LOG_ERR("sspLinePortSet failed. Port:%u Bandwidth:%u Action:%u",
+                        usPort, tUobject_attr.m_bandwidth, converted_act);
+        }
+    }
+
+    return iRet;
+}
+/* Ended by AICoder, pid:r1009jdb45cc46014ada09cb709195689bb1da8a */
+
+/* Started by AICoder, pid:ce222m9614j0e8c14e2608aa30f4063794b778c1 */
+/**
+ * @brief 宽带调整消息统一处理入口
+ *
+ * @param wState 状态参数
+ * @param dwMsgId 消息ID
+ * @param pMsgBody 消息体指针
+ * @param pPData 私有数据指针
+ * @param bSame 是否同步消息标志
+ */
+void RecvWidthMsg(WORD16 wState, WORD32 dwMsgId, VOID *pMsgBody, VOID *pPData, BOOLEAN bSame)
+{
+    INT32 iRet = SSP_OK;
+    OMsgHeadL1AndL2  *MsgHead = NULL;
+
+    if(NULL == pMsgBody)
+    {
+        PORT_LOG_ERR("pMsgBody is NULL!");
+        return;
+    }
+
+    MsgHead = (OMsgHeadL1AndL2 *)((UINT8 *)pMsgBody);
+    PORT_LOG_NOTICE("Recv msg:msg_type %d", MsgHead->msg_type);
+
+    switch(MsgHead->msg_type)
+    {
+        case EV_CP_OSU_BW_ADJ:
+            iRet = RecvOsuWidthMsg(pMsgBody);
+            break;
+
+        case EV_CP_VCG_BW_ADJ:
+            iRet = RecvVcgWidthMsg(pMsgBody);
+            break;
+
+        default:
+            PORT_LOG_ERR("msg_type %d unknown!", MsgHead->msg_type);
+            iRet = SSP_ERROR;
+            break;
+    }
+
+    if (SSP_OK != iRet)
+    {
+        PORT_LOG_ERR("change width Fail! Error code: %d", iRet);
+    }
+
+    return;
+}
+/* Ended by AICoder, pid:ce222m9614j0e8c14e2608aa30f4063794b778c1 */```

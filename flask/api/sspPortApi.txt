@@ -1,0 +1,905 @@
+文件名：sspPortApi.h
+```c
+/*============================================================================*/
+/*  版权声明 : Copyright (c) 1998-2008 中兴通讯股份有限公司传输北京软件开发部 */
+/*  系统名称 : ZXONE 8600光传输系统                                           */
+/*  文 件 名 : sspPortApi.h                                                   */
+/*  功能描述 :                                                                */
+/*  创 建 人 : 刘希                                                           */
+/*  文件版本 : 1                                                              */
+/*  创建日期 : 2011.11.30                                                     */
+/*============================================================================*/
+/*  修改记录                                                                  */
+/*  日期         版本            修改人          修改摘要                     */
+/*============================================================================*/
+#ifndef _SSPPORTAPI_H
+#define _SSPPORTAPI_H
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
+/*============================================================================*/
+/* 宏定义                                                                     */
+/*============================================================================*/
+
+
+/*============================================================================*/
+/* 数据类型                                                                   */
+/*============================================================================*/
+
+
+/*============================================================================*/
+/* 函数声明                                                                   */
+/*============================================================================*/
+INT32 sspPortSemIdCreate();
+INT32 sspPortBandwidthSemIdCreate();
+VOID sspPortBandwidthSemIdGet(UINT32 *ulPortSemId);
+VOID sspPortSemIdGet(UINT32 *ulPortSemId);
+VOID sspPortInfoClear();
+INT32 SSP_PORT_InfoGet(UINT16 usPortId, SSP_PORT_INFO_S* pstPortInfo);
+SSP_PORT_INFO_S* sspPortInfoGet(UINT16 usPortId);
+INT32 SSP_PORT_InfoSet(UINT16 usPortId, SSP_PORT_INFO_S* pstPortInfo);
+VOID sspLinePortBandwidthSet(UINT32 ulPortId, UINT32 ulLinePortValue);
+VOID sspLinePortBandwidthGet(UINT32 ulPortId, UINT32 *pLinePortValue);
+INT32 sspPortTypeSet(UINT16 usPortId, UINT32 ulPortType);
+INT32 sspPortSpeedAndNegSet(UINT16 usPortId, UINT32 ulSpeed, UINT32 ulAutoNeg);
+INT32 sspPortDuplexSet(UINT16 usPortId, UINT32 ulDuplex);
+INT32 sspPortEnableSet(UINT16 usPortId, UINT32 ulEnable);
+INT32 SSP_PORT_SpeedGet(UINT16 usPortId, UINT32 *pulSpeed);
+UINT16 SSP_PORT_SoftSpeedGet(UINT16 usPortId);
+UINT16 SSP_PORT_SoftAutoNegGet(UINT16 usPortId);
+UINT16 SSP_PORT_SoftEnableGet(UINT16 usPortId);
+UINT16 SSP_PORT_SoftFlowCtrlGet(UINT16 usPortId);
+INT32 SSP_PORT_DuplexGet(UINT16 usPortId, UINT32 *pulDuplex);
+INT32 SSP_PORT_LinkStatusGet(UINT16 usPortId, UINT32 *pulLink);
+VOID sspReportPortType(SSP_PORT_INFO_S *pstPortInfo);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+```
+
+文件名：sspPortApi.c
+```c
+/*============================================================================*/
+/*  版权声明 : Copyright (c) 1998-2008 中兴通讯股份有限公司传输北京软件开发部 */
+/*  系统名称 : ZXONE 8600光传输系统                                           */
+/*  文 件 名 : sspPortApi.c                                                   */
+/*  功能描述 :                                                                */
+/*  创 建 人 : liuxi                                                          */
+/*  文件版本 : ZXOPS1.3                                                       */
+/*  创建日期 : 2013.7.31                                                      */
+/*============================================================================*/
+/*  修改记录                                                                  */
+/*  日期         版本            修改人          修改摘要                     */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 包含的标准库或者其他非标准库头文件                                         */
+/*============================================================================*/
+/* include */
+#include "opmod_common.h"
+/* frm */
+#include "sspErrorNo.h"
+#include "sspSyslog.h"
+#include "sspBitLib.h"
+/* supp */
+#include "sspDevice.h"
+#include "sspPortPhyApi.h"
+#include "sspHwAdapterApi.h"
+#include "sspPortHwApi.h"
+/* plat */
+#include "sspTrunkOuterApi.h"
+
+/*============================================================================*/
+/* 本文件使用的常量定义                                                       */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 本文件使用的宏定义                                                         */
+/*============================================================================*/
+#define SSP_PORT_PHY_ATTR_INVALID_VALUE 0xFFFE
+
+/*============================================================================*/
+/* 本文件使用的数据类型                                                       */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 全局变量                                                                   */
+/*============================================================================*/
+/* 端口配置和状态的软件记录 */
+SSP_PORT_INFO_S g_stPortInfo[SSP_DEVICE_PHY_NUM_MAX];
+UINT32 g_ulPortSemId = 0;
+UINT32 g_ulLinePortBandwidthSemId = 0;
+static UINT32 g_ulLinePortBandwidth[SSP_DEVICE_LINE_NUM_MAX + 1];
+/*============================================================================*/
+/* 函数声明                                                                   */
+/*============================================================================*/
+/*
+描述：获取指定聚合组的总带宽
+输入：usGroup - 聚合组ID
+输出：返回聚合组总带宽（单位：Mbps）
+*/
+UINT32 SSP_Trunk_SpeedGet(UINT16 usGroup);
+
+/*============================================================================*/
+/* 函数实现                                                                   */
+/*============================================================================*/
+/******************************* 全局数据函数 *******************************/
+/*
+描述：获取端口信息结构体指针
+输入：usPortId - 物理端口号
+输出：指向SSP_PORT_INFO_S结构体的指针
+*/
+SSP_PORT_INFO_S* sspPortInfoGet(UINT16 usPortId)
+{
+    if((usPortId>=SSP_DEVICE_PHY_NUM) || (0 == usPortId))
+    {
+        /*修改kw ，如果端口过大，返回最后一个值*/
+        return &g_stPortInfo[SSP_DEVICE_PHY_NUM_MAX-1];
+    }
+    else
+    {
+        return &g_stPortInfo[usPortId - 1];
+    }
+}
+
+/* Started by AICoder, pid:r302cg42dfi279214da4093d50f6cf10da515fc2 */
+/*
+描述：获取端口配置信息
+输入：usPortId - 物理端口号，pstPortInfo - 存储端口信息的结构体指针
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 SSP_PORT_InfoGet(UINT16 usPortId, SSP_PORT_INFO_S* pstPortInfo)
+{
+    if ((usPortId < SSP_DEVICE_PHY_MIN) || (usPortId > SSP_DEVICE_PHY_MAX))
+    {
+        PORT_LOG_ERR("PortId %d is wrong!", usPortId);
+        return SSP_ERROR;
+    }
+
+    SSP_MEMCPY(pstPortInfo, sizeof(SSP_PORT_INFO_S), sspPortInfoGet(usPortId), sizeof(SSP_PORT_INFO_S));
+    return SSP_OK;
+}
+/* Ended by AICoder, pid:r302cg42dfi279214da4093d50f6cf10da515fc2 */
+
+/* Started by AICoder, pid:p0b5a73b23jd7a2146390953b06f2f02a0c42bbf */
+/*
+描述：清除所有端口信息
+输入：无
+输出：无
+*/
+VOID sspPortInfoClear()
+{
+    SSP_MEMSET(g_stPortInfo, sizeof(g_stPortInfo), 0, sizeof(g_stPortInfo));
+}
+/* Ended by AICoder, pid:p0b5a73b23jd7a2146390953b06f2f02a0c42bbf */
+
+/*
+描述：创建端口信号量
+输入：无
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortSemIdCreate()
+{
+    INT32 ret = SSP_OK;
+    ret = sspSemMuxCreate(SSP_MODULE_PORT, &g_ulPortSemId);
+    if (SSP_OK != ret)
+    {
+        PORT_LOG_ERR("g_ulPortSemId create Err!");
+        return SSP_ERROR;
+    }
+    return SSP_OK;
+}
+
+/*
+描述：获取端口信号量ID
+输入：ulPortSemId - 存储信号量ID的指针
+输出：无
+*/
+VOID sspPortSemIdGet(UINT32 *ulPortSemId)
+{
+    *ulPortSemId = g_ulPortSemId;
+    return;
+}
+
+/*
+描述：创建线路端口带宽信号量
+输入：无
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortBandwidthSemIdCreate()
+{
+    INT32 ret = SSP_OK;
+    ret = sspSemMuxCreate(SSP_MODULE_PORT, &g_ulLinePortBandwidthSemId);
+    if (SSP_OK != ret)
+    {
+        PORT_LOG_ERR("g_ulLinePortBandwidthSemId create Err!");
+        return SSP_ERROR;
+    }
+    return SSP_OK;
+}
+
+/*
+描述：获取线路端口带宽信号量ID
+输入：ulPortSemId - 存储信号量ID的指针
+输出：无
+*/
+VOID sspPortBandwidthSemIdGet(UINT32 *ulPortSemId)
+{
+    *ulPortSemId = g_ulLinePortBandwidthSemId;
+    return;
+}
+
+/******************************* port attr set *******************************/
+/*
+描述：设置端口使能状态
+输入：usPortId - 物理端口号，ulEnable - 使能状态（PORT_ADMIN_DISABLE/PORT_ADMIN_ENABLE）
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortEnableSet(UINT16 usPortId, UINT32 ulEnable)
+{
+    SSP_PORT_INFO_S *pstPortInfo = sspPortInfoGet(usPortId);
+
+    PORT_LOG_NOTICE("5--Phyport %d Enable %d set", usPortId, ulEnable);
+
+    if ((ulEnable < PORT_ADMIN_DISABLE) || (ulEnable > PORT_ADMIN_ENABLE))
+    {
+        PORT_LOG_ERR("Phyport %d Enable %d is invalid!", usPortId, ulEnable);
+        return SSP_ERROR;
+    }
+
+    if(SSP_OK != Supp_SetPortEnable(usPortId, ulEnable))
+    {
+        PORT_LOG_ERR("HW Phyport %d Enable %d set fail!", usPortId, ulEnable);
+        return SSP_ERROR;
+    }
+
+    if (PORT_COPPER_SFP == pstPortInfo->ulSfpType)
+    {
+        sspPortCopperEnSet(usPortId, ulEnable);
+    }
+
+    pstPortInfo->ulEnable = ulEnable;
+
+    return SSP_OK;
+}
+
+/*
+描述：设置端口流控模式
+输入：usPortId - 物理端口号，ulFlowCtrl - 流控模式（PORT_FLOWCTRL_RX_TX_DISABLE等）
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortFlowCtrlSet(UINT16 usPortId, UINT32 ulFlowCtrl)
+{
+    SSP_PORT_INFO_S *pstPortInfo = sspPortInfoGet(usPortId);
+
+    PORT_LOG_NOTICE("4--Phyport %d FlowCtrl %d set", usPortId, ulFlowCtrl);
+
+    if ((ulFlowCtrl < PORT_FLOWCTRL_RX_TX_DISABLE) || (ulFlowCtrl > PORT_FLOWCTRL_RX_TX_ENABLE))
+    {
+        PORT_LOG_ERR("Phyport %d FlowCtrl %d is invalid!",usPortId,ulFlowCtrl);
+        return SSP_ERROR;
+    }
+
+    if (SSP_OK != Supp_SetPortFlowCtrl(usPortId, ulFlowCtrl))
+    {
+        PORT_LOG_ERR("HW Phyport %d FlowCtrl %d set fail!", usPortId, ulFlowCtrl);
+        return SSP_ERROR;
+    }
+
+    pstPortInfo->ulFlowCtrl = ulFlowCtrl;
+    return SSP_OK;
+}
+
+/*
+描述：设置LX1891INA电口的速度和自协商
+输入：usPortId - 物理端口号，ulSpeed - 速度，ulAutoNeg - 自协商状态
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortSpeedAndNegLX1891INASet(UINT16 usPortId, UINT32 ulSpeed, UINT32 ulAutoNeg)
+{
+    INT32 ret = 0;
+    PORT_LOG_NOTICE("phyPort %d is LX1891INA", usPortId);
+
+    /* 联特电口不论配置1000M还是100M，都配置为SGMII模式，因此都传入1000M */
+    if(SSP_OK != Supp_SetPortSerdesMode(usPortId,PORT_SPEED_1000))
+    {
+        PORT_LOG_ERR("HW copper phyPort:%d Speed %d set serdes mode fail!", usPortId, ulSpeed);
+        return SSP_ERROR;
+    }
+
+    if (PORT_SPEED_1000 == ulSpeed)
+    {
+        if(SSP_OK != Supp_SetPortSpeed(usPortId,ulSpeed))
+        {
+            PORT_LOG_ERR("HW copper phyPort:%d Speed %d set fail!", usPortId, ulSpeed);
+            return SSP_ERROR;
+        }
+    }
+
+    if (PORT_AUTONEG_ENABLE == ulAutoNeg)
+    {
+        sspPortCopperAutoNegSet(usPortId, ulSpeed, ulAutoNeg);
+    }
+    else
+    {
+        if (PORT_SPEED_1000 == ulSpeed)
+        {
+            ret = sspPortCopper1000NoNegSet(usPortId, ulSpeed, ulAutoNeg);
+            if (SSP_OK != ret)
+            {
+                PORT_LOG_ERR("HW copper phyPort:%d sspPortCopper1000NoNegSet set fail!", usPortId);
+                return SSP_ERROR;
+            }
+            PORT_LOG_NOTICE("phyPort %d set 1000BASE_X", usPortId);
+        }
+        else
+        {
+            ret = sspPortCopper100NoNegSet(usPortId, ulSpeed, ulAutoNeg);
+            ret |= Supp_SetPortSpeed(usPortId,PORT_SPEED_100);
+            if (SSP_OK != ret)
+            {
+                PORT_LOG_ERR("HW copper phyPort:%d SPEED_100 set fail!", usPortId);
+                return SSP_ERROR;
+            }
+            PORT_LOG_NOTICE("phyPort %d set SPEED_100", usPortId);
+        }
+    }
+
+    return SSP_OK;
+}
+
+/*
+描述：设置普通电口的速度和自协商
+输入：usPortId - 物理端口号，ulSpeed - 速度，ulAutoNeg - 自协商状态
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortSpeedAndNegCopperCommonSet(UINT16 usPortId, UINT32 ulSpeed, UINT32 ulAutoNeg)
+{
+    INT32 ret = SSP_OK;
+
+    ret = Supp_SetPortSerdesMode(usPortId, ulSpeed);
+    if (SSP_OK != ret)
+    {
+        PORT_LOG_ERR("HW copper phyPort:%d Speed %d set serdes mode fail!", usPortId, ulSpeed);
+        return SSP_ERROR;
+    }
+
+    if (PORT_SPEED_1000 == ulSpeed)
+    {
+        ret = Supp_SetPortSpeed(usPortId, ulSpeed);
+        if (SSP_OK != ret)
+        {
+            PORT_LOG_ERR("HW copper phyPort:%d Speed %d set fail!", usPortId, ulSpeed);
+            return SSP_ERROR;
+        }
+    }
+
+    ret = Supp_SetPortAutoNeg(usPortId, ulAutoNeg);
+    if (SSP_OK != ret)
+    {
+        PORT_LOG_ERR("HW copper phyPort %d AutoNeg %d set fail!", usPortId, ulAutoNeg);
+        return SSP_ERROR;
+    }
+
+    return SSP_OK;
+}
+
+/*
+描述：设置电口的速度和自协商
+输入：usPortId - 物理端口号，ulSpeed - 速度，ulAutoNeg - 自协商状态
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortSpeedAndNegCopperSet(UINT16 usPortId, UINT32 ulSpeed, UINT32 ulAutoNeg)
+{
+    INT32 ret = SSP_OK;
+    PORT_LOG_NOTICE("3--copper phyPort:%d Speed %d AutoNeg %d set", usPortId, ulSpeed, ulAutoNeg);
+
+    if (SSP_OK == sspPortJudgmentIfLX1891INA(usPortId))/*是LX1891INA*/
+    {
+        ret = sspPortSpeedAndNegLX1891INASet(usPortId, ulSpeed, ulAutoNeg);
+    }
+    else
+    {
+        ret = sspPortSpeedAndNegCopperCommonSet(usPortId, ulSpeed, ulAutoNeg);
+    }
+
+    return ret;
+}
+
+/*
+描述：设置光口的速度和自协商
+输入：usPortId - 物理端口号，ulSpeed - 速度，ulAutoNeg - 自协商状态
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortSpeedAndNegFiberSet(UINT16 usPortId, UINT32 ulSpeed, UINT32 ulAutoNeg)
+{
+    PORT_LOG_NOTICE("3--fiber phyPort:%d Speed %d AutoNeg %d set", usPortId, ulSpeed, ulAutoNeg);
+
+    if (SSP_OK != Supp_SetPortSerdesMode(usPortId, ulSpeed))
+    {
+        PORT_LOG_ERR("HW fiber phyPort:%d Speed %d set serdes mode fail!", usPortId, ulSpeed);
+        return SSP_ERROR;
+    }
+
+    if (PORT_SPEED_1000 == ulSpeed)
+    {
+        if (SSP_OK != Supp_SetPortSpeed(usPortId, ulSpeed))
+        {
+            PORT_LOG_ERR("HW fiber phyPort:%d Speed %d set fail!", usPortId, ulSpeed);
+            return SSP_ERROR;
+        }
+    }
+
+    if (SSP_OK != Supp_SetPortAutoNeg(usPortId, ulAutoNeg))
+    {
+        PORT_LOG_ERR("HW fiber phyPort:%d AutoNeg %d set fail!", usPortId, ulAutoNeg);
+        return SSP_ERROR;
+    }
+
+    return SSP_OK;
+}
+
+/*
+描述：设置端口速度和自协商
+输入：usPortId - 物理端口号，ulSpeed - 速度，ulAutoNeg - 自协商状态
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortSpeedAndNegSet(UINT16 usPortId, UINT32 ulSpeed, UINT32 ulAutoNeg)
+{
+    INT32  ret = SSP_OK;
+    UINT32 ulCfgNeg = 0;
+    SSP_PORT_INFO_S *pstPortInfo = sspPortInfoGet(usPortId);
+
+    if ((ulSpeed < PORT_SPEED_10) || (ulSpeed > PORT_SPEED_100000))
+    {
+        PORT_LOG_ERR("Phyport %d Speed %d is invalid!", usPortId, ulSpeed);
+        return SSP_ERROR;
+    }
+
+    if ((ulAutoNeg < PORT_AUTONEG_ENABLE) || (ulAutoNeg > PORT_AUTONEG_DISABLE))
+    {
+        PORT_LOG_ERR("Phyport %d AutoNeg %d is invalid!", usPortId, ulAutoNeg);
+        return SSP_ERROR;
+    }
+
+    if ((PORT_AUTONEG_ENABLE == ulAutoNeg) && (PORT_SPEED_1000 != ulSpeed))
+    {
+        ulCfgNeg = PORT_AUTONEG_DISABLE;
+    }
+    else
+    {
+        ulCfgNeg = ulAutoNeg;
+    }
+
+    pstPortInfo->ulSfpType = sspPortSfpTypeGet(pstPortInfo->usPortId);
+    if (PORT_COPPER_SFP == pstPortInfo->ulSfpType)
+    {
+        ret = sspPortSpeedAndNegCopperSet(usPortId, ulSpeed, ulCfgNeg);
+    }
+    else
+    {
+        ret = sspPortSpeedAndNegFiberSet(usPortId, ulSpeed, ulCfgNeg);
+    }
+
+    if (SSP_OK != ret)
+    {
+        PORT_LOG_ERR("PhyPort %d Speed %d AutoNeg %d set fail!", usPortId, ulSpeed, ulAutoNeg);
+        return ret;
+    }
+
+    pstPortInfo->ulAutoNeg = ulCfgNeg;
+    pstPortInfo->ulSpeed = ulSpeed;
+    return SSP_OK;
+}
+
+/*
+描述：设置端口双工模式
+输入：usPortId - 物理端口号，ulDuplex - 双工模式（PORT_DUPLEX_FULL/HALF）
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortDuplexSet(UINT16 usPortId, UINT32 ulDuplex)
+{
+    SSP_PORT_INFO_S *pstPortInfo = sspPortInfoGet(usPortId);
+
+    PORT_LOG_NOTICE("2--PhyPort %d Duplex %d set", usPortId, ulDuplex);
+
+    if ((ulDuplex < PORT_DUPLEX_FULL) || (ulDuplex > PORT_DUPLEX_HALF))
+    {
+        PORT_LOG_ERR("PhyPort %d Duplex %d is invalid!", usPortId, ulDuplex);
+        return SSP_ERROR;
+    }
+
+    if (SSP_OK != Supp_SetPortDuplex(usPortId, ulDuplex))
+    {
+        PORT_LOG_ERR("HW PhyPort %d Duplex %d set fail!", usPortId, ulDuplex);
+        return SSP_ERROR;
+    }
+
+    pstPortInfo->ulDuplex = ulDuplex;
+    return SSP_OK;
+}
+
+/*
+描述：设置端口类型
+输入：usPortId - 物理端口号，ulPortType - 端口类型（PORT_FIBER_GE等）
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 sspPortTypeSet(UINT16 usPortId, UINT32 ulPortType)
+{
+    SSP_PORT_INFO_S *pstPortInfo = sspPortInfoGet(usPortId);
+
+    PORT_LOG_NOTICE("1--Phyport %d Type %d set", usPortId, ulPortType);
+
+    if ((ulPortType < PORT_FIBER_GE) || (ulPortType > PORT_FIBER_CGE))
+    {
+        PORT_LOG_ERR("Phyport %d Type %d is invalid!", usPortId, ulPortType);
+        return SSP_ERROR;
+    }
+
+    pstPortInfo->ulPortType = ulPortType;
+    return SSP_OK;
+}
+
+/*
+描述：设置端口完整信息
+输入：usPortId - 物理端口号，pstPortInfo - 包含端口信息的结构体指针
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 SSP_PORT_InfoSet(UINT16 usPortId, SSP_PORT_INFO_S* pstPortInfo)
+{
+    INT32 ret = SSP_OK;
+
+    if (NULL == pstPortInfo)
+    {
+        PORT_LOG_ERR("pstPortInfo is NULL!");
+        return SSP_ERROR;
+    }
+
+    sspSemTake(g_ulPortSemId);
+
+    /* 需要先配置端口类型，再配置其他属性 */
+    ret |= sspPortTypeSet(usPortId, pstPortInfo->ulPortType);
+
+    ret |= sspPortDuplexSet(usPortId, pstPortInfo->ulDuplex);
+
+    ret |= sspPortSpeedAndNegSet(usPortId, pstPortInfo->ulSpeed, pstPortInfo->ulAutoNeg);
+
+    ret |= sspPortFlowCtrlSet(usPortId, pstPortInfo->ulFlowCtrl);
+
+    ret |= sspPortEnableSet(usPortId, pstPortInfo->ulEnable);
+
+    sspSemGive(g_ulPortSemId);
+
+    return ret;
+}
+
+/******************************* port speed get *******************************/
+/* Started by AICoder, pid:h3169fcd7fv111b148e30aeb30cc9b17770061fe */
+/*
+描述：设置线路端口带宽值
+输入：ulPortId - 线路端口号，ulLinePortValue - 带宽值（Kbps）
+输出：无
+*/
+VOID sspLinePortBandwidthSet(UINT32 ulPortId, UINT32 ulLinePortValue)
+{
+    if (ulPortId < SSP_DEVICE_LINE_MIN || ulPortId > SSP_DEVICE_LINE_MAX)
+    {
+        PORT_LOG_ERR("Invalid port ID: %u", ulPortId);
+        return;
+    }
+
+    g_ulLinePortBandwidth[ulPortId - SSP_DEVICE_LINE_MIN + 1] = ulLinePortValue;
+}
+/* Ended by AICoder, pid:h3169fcd7fv111b148e30aeb30cc9b17770061fe */
+
+/* Started by AICoder, pid:d3169xcd7fg111b148e30aeb30cc9b17770161fe */
+/*
+描述：获取线路端口带宽值
+输入：ulPortId - 线路端口号，pLinePortValue - 存储带宽值的指针
+输出：无
+*/
+VOID sspLinePortBandwidthGet(UINT32 ulPortId, UINT32 *pLinePortValue)
+{
+    if (ulPortId < SSP_DEVICE_LINE_MIN || ulPortId > SSP_DEVICE_LINE_MAX)
+    {
+        PORT_LOG_ERR("Invalid port ID: %u", ulPortId);
+        *pLinePortValue = 0;  // 或者其他合适的默认值
+        return;
+    }
+
+    *pLinePortValue = g_ulLinePortBandwidth[ulPortId - SSP_DEVICE_LINE_MIN + 1];
+}
+/* Ended by AICoder, pid:d3169xcd7fg111b148e30aeb30cc9b17770161fe */
+/*
+描述：转换速度值到标准定义
+输入：ulSpeed - 速度值
+输出：返回对应的标准速度定义
+*/
+static UINT32 sspGetSpeed(UINT32 ulSpeed)
+{
+    if (PORT_SPEED_100 == ulSpeed)
+    {
+        return SSP_PORT_SPEED_100;
+    }
+    else if (PORT_SPEED_1000 == ulSpeed)
+    {
+        return SSP_PORT_SPEED_1000;
+    }
+    else if (PORT_SPEED_10000 == ulSpeed)
+    {
+        return SSP_PORT_SPEED_10000;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+/*
+描述：获取端口速度
+输入：usPortId - 物理端口号，pulSpeed - 存储速度值的指针
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 SSP_PORT_SpeedGet(UINT16 usPortId, UINT32 *pulSpeed)
+{
+    UINT32 ulSpeed = 0;
+    UINT32 ulLinePortSpeed = 0;
+
+    if ((usPortId < SSP_DEVICE_PHY_MIN) || (usPortId > SSP_DEVICE_PHY_MAX))
+    {
+        return SSP_ERROR;
+    }
+
+    ulSpeed = sspPortInfoGet(usPortId)->ulSpeed;
+
+    if ( (usPortId <= SSP_DEVICE_LINE_MAX) && (usPortId >= SSP_DEVICE_LINE_MIN) )
+    {
+        sspSemTake(g_ulLinePortBandwidthSemId);
+        sspLinePortBandwidthGet(usPortId, &ulLinePortSpeed);
+        *pulSpeed = ulLinePortSpeed/1000; /*convert Kb/s to Mb/s*/
+        sspSemGive(g_ulLinePortBandwidthSemId);
+
+        if (0 == *pulSpeed)
+        {
+            *pulSpeed = SSP_PORT_SPEED_1000;/*默认1000M，避免分母为0*/
+        }
+
+        return SSP_OK;
+    }
+
+    if (SSP_DEVICE_TRUNK_MAX == usPortId) /*EOO背板连接端口*/
+    {
+        ulSpeed = PORT_SPEED_10000;
+    }
+    else if ((usPortId >= SSP_DEVICE_TRUNK_MIN) && (usPortId < SSP_DEVICE_TRUNK_MAX)) /*普通聚合端口*/
+    {
+        *pulSpeed = SSP_Trunk_SpeedGet(usPortId - SSP_DEVICE_TRUNK_MIN + 1);
+        return SSP_OK;
+    }
+
+    *pulSpeed = sspGetSpeed(ulSpeed);
+
+    return SSP_OK;
+}
+
+/*
+描述：获取指定聚合组的总带宽
+输入：usGroup - 聚合组ID
+输出：返回聚合组总带宽（单位：Mbps）
+ */
+UINT32 SSP_Trunk_SpeedGet(UINT16 usGroup)
+{
+    UINT16 usPortId         = 0;
+    UINT16 usActivePortId   = 0;
+    UINT16 usActivePortNum  = 0;
+    UINT32 ulBandwidth      = 0;
+    TRUNK_GROUP_S *pTrunkList = NULL;
+
+    pTrunkList = sspOuterGetTrunkHandle(usGroup);
+    if (NULL == pTrunkList)
+    {
+        PORT_LOG_ERR("sspOuterGetTrunkHandle NULL");
+        return SSP_PORT_SPEED_1000;
+    }
+
+    for (usPortId = SSP_DEVICE_CLIENT_MIN; usPortId <= SSP_DEVICE_CLIENT_MAX; usPortId++)
+    {
+        if (SSP_BIT_TEST(pTrunkList->m_tActiveMemberList, usPortId-1) == SSP_TRUE)
+        {
+            usActivePortId = usPortId;
+            usActivePortNum++;
+        }
+    }
+
+    if (usActivePortNum >0)
+    {
+        SSP_PORT_SpeedGet(usActivePortId, &ulBandwidth);
+        return (ulBandwidth*usActivePortNum);
+    }
+    else
+    {
+        return SSP_PORT_SPEED_1000;
+    }
+}
+
+/******************************* port attr soft get *******************************/
+/*
+描述：获取端口双工状态
+输入：usPortId - 物理端口号，pulDuplex - 存储双工状态的指针
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 SSP_PORT_DuplexGet(UINT16 usPortId, UINT32 *pulDuplex)
+{
+    if ((usPortId < SSP_DEVICE_PHY_MIN) || (usPortId > SSP_DEVICE_PHY_MAX))
+    {
+        PORT_LOG_ERR("PortId %d is wrong!", usPortId);
+        return SSP_ERROR;
+    }
+
+    *pulDuplex = sspPortInfoGet(usPortId)->ulDuplex;
+    return SSP_OK;
+}
+
+/*
+描述：获取端口自协商状态
+输入：usPortId - 物理端口号，pulAutoNeg - 存储自协商状态的指针
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 SSP_PORT_AutoNegGet(UINT16 usPortId, UINT32 *pulAutoNeg)
+{
+    if ((usPortId < SSP_DEVICE_PHY_MIN) || (usPortId > SSP_DEVICE_PHY_MAX))
+    {
+        PORT_LOG_ERR("PortId %d is wrong!", usPortId);
+        return SSP_ERROR;
+    }
+
+    *pulAutoNeg = sspPortInfoGet(usPortId)->ulAutoNeg;
+    return SSP_OK;
+}
+
+/*
+描述：获取端口链路状态
+输入：usPortId - 物理端口号，pulLink - 存储链路状态的指针
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 SSP_PORT_LinkStatusGet(UINT16 usPortId, UINT32 *pulLink)
+{
+    if ((usPortId < SSP_DEVICE_PHY_MIN) || (usPortId > SSP_DEVICE_PHY_MAX))
+    {
+        PORT_LOG_ERR("PortId %d is wrong!", usPortId);
+        return SSP_ERROR;
+    }
+
+    *pulLink = sspPortInfoGet(usPortId)->ulLink;
+    return SSP_OK;
+}
+
+/*
+描述：获取端口故障状态
+输入：usPortId - 物理端口号，pulFault - 存储故障状态的指针
+输出：成功返回SSP_OK，失败返回错误码
+*/
+INT32 SSP_PORT_LinkFaultGet(UINT16 usPortId, UINT32 *pulFault)
+{
+    if ((usPortId < SSP_DEVICE_PHY_MIN) || (usPortId > SSP_DEVICE_PHY_MAX))
+    {
+        PORT_LOG_ERR("PortId %d is wrong!", usPortId);
+        return SSP_ERROR;
+    }
+
+    *pulFault = sspPortInfoGet(usPortId)->ulFault;
+    return SSP_OK;
+}
+
+/*
+描述：设置端口类型和SFP类型
+输入：pstPortInfo - 端口信息结构体指针
+输出：无
+*/
+VOID sspReportPortType(SSP_PORT_INFO_S *pstPortInfo)
+{
+    if(NULL == pstPortInfo)
+    {
+        return;
+    }
+
+    if(OP_ELECTRICAL_CONNECTOR == sspPortSfpTypeGet(pstPortInfo->usPortId))
+    {
+        pstPortInfo->ulPortType = PORT_COPPER;
+        pstPortInfo->ulSfpType  = PORT_COPPER_SFP;
+    }
+    else if(PORT_SPEED_100 == pstPortInfo->ulSpeed)
+    {
+        pstPortInfo->ulPortType = PORT_FIBER_FE;
+    }
+    else if(PORT_SPEED_1000 == pstPortInfo->ulSpeed)
+    {
+        pstPortInfo->ulPortType = PORT_FIBER_GE;
+    }
+    else if(PORT_SPEED_10000 == pstPortInfo->ulSpeed)
+    {
+        pstPortInfo->ulPortType = PORT_FIBER_XGE;
+    }
+
+    return;
+}
+
+/*
+描述：获取端口软件记录速度
+输入：usPortId - 物理端口号
+输出：返回速度值，无效返回SSP_PORT_PHY_ATTR_INVALID_VALUE
+*/
+UINT16 SSP_PORT_SoftSpeedGet(UINT16 usPortId)
+{
+    UINT16 usPortSpeed = SSP_PORT_PHY_ATTR_INVALID_VALUE;
+    if ((usPortId < SSP_DEVICE_PHY_MIN) || (usPortId > SSP_DEVICE_PHY_MAX))
+    {
+        PORT_LOG_ERR("PortId %d is wrong!", usPortId);
+        return usPortSpeed;
+    }
+
+    usPortSpeed = sspPortInfoGet(usPortId)->ulSpeed;
+    return usPortSpeed;
+}
+
+/*
+描述：获取端口软件记录自协商状态
+输入：usPortId - 物理端口号
+输出：返回自协商状态，无效返回SSP_PORT_PHY_ATTR_INVALID_VALUE
+*/
+UINT16 SSP_PORT_SoftAutoNegGet(UINT16 usPortId)
+{
+    UINT16 usPortNeg = SSP_PORT_PHY_ATTR_INVALID_VALUE;
+    if ((usPortId < SSP_DEVICE_PHY_MIN) || (usPortId > SSP_DEVICE_PHY_MAX))
+    {
+        PORT_LOG_ERR("PortId %d is wrong!", usPortId);
+        return usPortNeg;
+    }
+
+    usPortNeg = sspPortInfoGet(usPortId)->ulAutoNeg;
+    return usPortNeg;
+}
+
+/*
+描述：获取端口软件记录使能状态
+输入：usPortId - 物理端口号
+输出：返回使能状态，默认返回PORT_ADMIN_ENABLE
+*/
+UINT16 SSP_PORT_SoftEnableGet(UINT16 usPortId)
+{
+    UINT16 usEnable = PORT_ADMIN_ENABLE;
+    if ((usPortId < SSP_DEVICE_PHY_MIN) || (usPortId > SSP_DEVICE_PHY_MAX))
+    {
+        PORT_LOG_ERR("PortId %d is wrong!", usPortId);
+        return usEnable;
+    }
+
+    usEnable = sspPortInfoGet(usPortId)->ulEnable;
+    return usEnable;
+}
+
+/*
+描述：获取端口软件记录流控模式
+输入：usPortId - 物理端口号
+输出：返回流控模式，默认返回PORT_FLOWCTRL_RX_TX_DISABLE
+*/
+UINT16 SSP_PORT_SoftFlowCtrlGet(UINT16 usPortId)
+{
+    UINT16 usFlowCtrl = PORT_FLOWCTRL_RX_TX_DISABLE;
+    if ((usPortId < SSP_DEVICE_PHY_MIN) || (usPortId > SSP_DEVICE_PHY_MAX))
+    {
+        PORT_LOG_ERR("PortId %d is wrong!", usPortId);
+        return usFlowCtrl;
+    }
+
+    usFlowCtrl = sspPortInfoGet(usPortId)->ulFlowCtrl;
+    return usFlowCtrl;
+}
+```

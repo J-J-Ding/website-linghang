@@ -1,0 +1,496 @@
+<template>
+  <div>
+    <div v-html="htmlContent"></div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from 'vue';
+
+// 从 API、文件、或变量获取的 HTML 字符串
+const htmlContent = ref(`
+
+<!doctype html>
+<html lang="zh">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>波分软件开发一部 质量红线 - 25H1</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+        background-color: #f9f9fb;
+        color: #333;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 40px auto;
+        padding: 30px;
+        background-color: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+        border-bottom: 2px solid #d6293e;
+        padding-bottom: 15px;
+      }
+
+      h1 {
+        font-size: 28px;
+        color: #d6293e;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+        color: #666;
+        margin-top: 8px;
+      }
+
+      .last-update {
+        text-align: right;
+        font-size: 14px;
+        color: #888;
+        margin: 20px 0 30px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+        font-size: 15px;
+      }
+
+      th {
+        background-color: #2c3e50;
+        color: white;
+        text-align: left;
+        padding: 14px 12px;
+        font-weight: 600;
+      }
+
+      td {
+        padding: 12px;
+        border-bottom: 1px solid #ddd;
+        vertical-align: top;
+      }
+
+      
+
+      .category {
+        font-weight: bold;
+        color: #2c3e50;
+        font-size: 17px;
+      }
+
+      .redline-list {
+        list-style-type: none;
+        padding-left: 0;
+      }
+
+      .redline-item {
+        margin-bottom: 8px;
+        position: relative;
+        padding-left: 10px;
+      }
+
+      .redline-item::before {
+        content: '•';
+        color: #d6293e;
+        font-weight: bold;
+        display: inline-block;
+        width: 1em;
+        margin-left: -1em;
+      }
+
+      .penalty {
+        color: #e74c3c;
+        font-weight: 500;
+        background-color: #fff5f5;
+        padding: 10px;
+        border-radius: 6px;
+        border-left: 4px solid #e74c3c;
+      }
+
+      .penalty p {
+        margin: 5px 0;
+      }
+
+      .links a {
+        color: #1a73e8;
+        text-decoration: none;
+        font-size: 14px;
+      }
+
+      .links a:hover {
+        text-decoration: underline;
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+        color: #999;
+        font-size: 14px;
+      }
+
+      .table-image {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      .image-container {
+        text-align: center;
+        padding: 5px;
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 15px;
+        }
+
+        h1 {
+          font-size: 24px;
+        }
+
+        th,
+        td {
+          padding: 10px 8px;
+          font-size: 14px;
+        }
+
+        .table-image {
+          max-width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>波分软件开发一部 质量红线 - 25H1</h1>
+        <p class="subtitle">严格遵守质量规范，杜绝低级错误，保障产品交付质量</p>
+      </header>
+
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 10%">工序大类</th>
+            <th style="width: 50%">红线规范</th>
+            <th style="width: 20%">处罚规范</th>
+            <th style="width: 20%">链接</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 波分中心质量黑榜 -->
+          <tr>
+            <td class="category">波分中心质量黑榜</td>
+            <td class="image-container">
+              <img
+                src="https://icenterapi.zte.com.cn/group2/M03/CE/9F/CimNG2gRlQaAVXo8AAIW1-MQvcM365.png?w=1262&h=676"
+                alt="波分中心质量黑榜红线规范"
+                class="table-image"
+              />
+            </td>
+            <td class="image-container">
+              <img
+                src="https://icenterapi.zte.com.cn/group2/M03/CE/A3/CimNG2gRlS6ANQqoAAD1Pb50YhQ833.png?w=807&h=706"
+                alt="波分中心质量黑榜处罚规范"
+                class="table-image"
+              />
+            </td>
+            <td class="links">
+              <a
+                href="https://i.zte.com.cn/#/shared/181d9eb900124b85b5c18134ff8228f6/wiki/page/9e278b29e72d4c50b5d1516b21c4db4c/view"
+                target="_blank"
+              >
+                2025年波分产品研发中心质量奖惩管理细则V0.1
+              </a>
+            </td>
+          </tr>
+
+          <!-- 需求 -->
+          <tr>
+            <td class="category">需求</td>
+            <td>
+              <ul class="redline-list">
+                <li class="redline-item">禁止接受口头和邮件需求，需求开发必须可追溯（MR←PR←APR）</li>
+                <li class="redline-item">禁止在上游需求状态为新建状态时拆分建立下游的需求（MR→PR→APR）</li>
+                <li class="redline-item">
+                  禁止开发人员自行关闭需求，所有待验证的需求都必须进行版本关联，并且由测试人员进行验收（MR←PR←APR）
+                </li>
+                <li class="redline-item">禁止方案未讨论完成，方案状态变更到已定稿</li>
+                <li class="redline-item">禁止因质量态度不端正，导致不兼容设计引入的故障泄露</li>
+                <li class="redline-item">
+                  团队对于硬件/逻辑的需求与变更必须遵循明确的准入标准，严禁因对硬件/逻辑要求不清而导致故障泄露。一旦发生此类故障，一律视为低级编码故障，并上部门黑榜进行问责。
+                </li>
+                <li class="redline-item">对于硬件/逻辑的需求与变更传递，必须有明确的文档记录，严禁口头传递。</li>
+              </ul>
+            </td>
+            <td class="penalty">
+              <p>未造成严重工程故障：</p>
+              <p><strong>部门通报</strong></p>
+              <p>造成严重工程故障：</p>
+              <p><strong>以波分中心质量奖惩规则为主</strong></p>
+            </td>
+            <td class="links">
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/2e1a43544c804e3390fc2cdc18d6bf7c/view"
+                target="_blank"
+                >需求-需求准入/准出</a
+              ><br />
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/6eb618783fdf488680f8aacf7b0b5167/view"
+                target="_blank"
+                >需求-硬件/逻辑准入</a
+              >
+            </td>
+          </tr>
+
+          <!-- 详设 -->
+          <tr>
+            <td class="category">详设</td>
+            <td>
+              <ul class="redline-list">
+                <li class="redline-item">禁止APR需求中的详设链接与实际需求不一致，绕过详设门禁；</li>
+                <li class="redline-item">禁止详设未讨论完成，详设状态变更到已定稿；</li>
+                <li class="redline-item">故障复盘中详设链接与实际问题不一致，改进举措落地执行弄虚作假；</li>
+                <li class="redline-item">禁止详设中设计的用例未进行实际落地闭环；</li>
+                <li class="redline-item">禁止核心详设评审无SE、测试人员参加；</li>
+                <li class="redline-item">禁止详设评审意见未闭环或弄虚作假；</li>
+              </ul>
+            </td>
+            <td class="penalty">
+              <p>未造成严重工程故障：</p>
+              <p><strong>部门通报</strong></p>
+              <p>造成严重工程故障：</p>
+              <p><strong>以波分中心质量奖惩规则为主</strong></p>
+            </td>
+            <td class="links">
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/5269e303392c499995b3680b18228bf4/view"
+                target="_blank"
+                >详设-详设基础动作</a
+              >
+            </td>
+          </tr>
+
+          <!-- 编码 -->
+          <tr>
+            <td class="category">编码</td>
+            <td>
+              <ul class="redline-list">
+                <li class="redline-item">禁止对抗/绕过门禁提交入库代码；</li>
+                <li class="redline-item"><strong>新增代码中不允许出现不安全函数；</strong></li>
+                <li class="redline-item"><strong>禁止对安全函数进行伪治理</strong>，包括：长度参数完全一样或经过计算后一样、长度参数填写类型最大值、长度参数硬编码等；</li>
+                <li class="redline-item"><strong>禁止在治理不安全函数的过程中引入新的问题；</strong></li>
+                <li class="redline-item"><strong>K&amp;C发现的问题非误报不能备案；</strong></li>
+                <li class="redline-item">禁止K&amp;C备案分析与评审不完整不充分，流于形式；</li>
+                <li class="redline-item">禁止用降低代码可读性的方式来规避圈复杂度检查；</li>
+                <li class="redline-item">禁止核心组件代码入库不邀请总工/编码专家进行走查；</li>
+                <li class="redline-item">禁止代码大扫除流于形式，也不邀请总工/编码专家进行走查；</li>
+              </ul>
+            </td>
+            <td class="penalty">
+              <p>未造成严重工程故障：</p>
+              <p><strong>部门通报</strong></p>
+              <p>造成严重工程故障：</p>
+              <p><strong>以波分中心质量奖惩规则为主</strong></p>
+            </td>
+            <td class="links">
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/6160b46ac8da42cf85ad475e52c5556e/view"
+                target="_blank"
+                >编码-编码专题红线9条</a
+              ><br />
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/8c9cf516b32c4b47a07b0bf52443869d/view"
+                target="_blank"
+                >编码-不安全函数</a
+              ><br />
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/0bc957a5c053483291010cb66d05a752/view"
+                target="_blank"
+                >编码-TOP20编码问题</a
+              >
+            </td>
+          </tr>
+
+          <!-- 自测 -->
+          <tr>
+            <td class="category">自测</td>
+            <td>
+              <ul class="redline-list">
+                <li class="redline-item">禁止自测报告验证截图和实际结论不一致；</li>
+                <li class="redline-item">禁止现有里程碑的需求，用以往里程碑的自测报告；</li>
+                <li class="redline-item">禁止自测报告造假：未验证直接给报告，或者报告结果造假；</li>
+                <li class="redline-item">禁止需求和自测报告不一致情况，A需求使用B报告；</li>
+              </ul>
+            </td>
+            <td class="penalty">
+              <p>未造成严重工程故障：</p>
+              <p><strong>部门通报</strong></p>
+              <p>造成严重工程故障：</p>
+              <p><strong>以波分中心质量奖惩规则为主</strong></p>
+            </td>
+            <td class="links">
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/6a158ba2c2504bebbdd2373687fbdb35/view"
+                target="_blank"
+                >自测-开发自测准出</a
+              >
+            </td>
+          </tr>
+
+          <!-- 联调 -->
+          <tr>
+            <td class="category">联调</td>
+            <td>
+              <ul class="redline-list">
+                <li class="redline-item">新硬件回板未组织硬件、BSP、逻辑进行软硬件变更波及分析就启动开发</li>
+              </ul>
+            </td>
+            <td class="penalty">
+              <p>未造成严重工程故障：</p>
+              <p><strong>部门通报</strong></p>
+              <p>造成严重工程故障：</p>
+              <p><strong>以波分中心质量奖惩规则为主</strong></p>
+            </td>
+            <td class="links">
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/61bba202806a4d3c904e71cb698cce84/view"
+                target="_blank"
+                >联调-pre-sprint0/sprint0</a
+              >
+            </td>
+          </tr>
+
+          <!-- 构建 -->
+          <tr>
+            <td class="category">构建</td>
+            <td>
+              <ul class="redline-list">
+                <li class="redline-item">严禁未经审批擅自修改工具管控门限，跳过检查步骤，人工打分Verify等行为</li>
+              </ul>
+            </td>
+            <td class="penalty">
+              <p>未造成严重工程故障：</p>
+              <p><strong>部门通报</strong></p>
+              <p>造成严重工程故障：</p>
+              <p><strong>以波分中心质量奖惩规则为主</strong></p>
+            </td>
+            <td class="links">
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/4aa1b7cdea4e4d6686a6e2d10c1df5e9/view"
+                target="_blank"
+                >构建-代码入库门禁</a
+              >
+            </td>
+          </tr>
+
+          <!-- 集测 -->
+          <tr>
+            <td class="category">集测</td>
+            <td>
+              <strong>准入红线：</strong>
+              <ul class="redline-list">
+                <li class="redline-item">【需求】严禁口头传递需求，未经实例化的需求或需求实例化无TSE验收准则的需求，禁止集测准入验证</li>
+                <li class="redline-item">【版本】无波及分析的项目版本，禁止集测准入验证</li>
+                <li class="redline-item">【自测】无自测报告或自测报告与需求不符且无波及分析说明的APR，禁止集测准入验证</li>
+                <li class="redline-item">【质量】存在A、B类阻测问题未解决</li>
+              </ul>
+              <strong>准出红线：</strong>
+              <ul class="redline-list">
+                <li class="redline-item">【执行】严禁数据造假，严禁测试未执行发布版本</li>
+                <li class="redline-item">【故障】严禁发现故障不与开发沟通反馈，严禁发现故障不提交，严禁故障等级降级，严禁故障未经验证关闭</li>
+                <li class="redline-item">【质量】存在A、B类阻测问题未解决</li>
+              </ul>
+            </td>
+            <td class="penalty">
+              <p>未造成严重工程故障：</p>
+              <p><strong>部门通报</strong></p>
+              <p>造成严重工程故障：</p>
+              <p><strong>以波分中心质量奖惩规则为主</strong></p>
+            </td>
+            <td class="links">
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/2a1fb003d9744608a759e374da19b129/view"
+                target="_blank"
+                >集测-准入/准出</a
+              >
+            </td>
+          </tr>
+
+          <!-- 质量维度 -->
+          <tr>
+            <td class="category">质量维度</td>
+            <td>
+              <ul class="redline-list">
+                <li class="redline-item">RDC复盘：禁止故障复盘内容随意填写，复盘内容和实际情况完全不同；</li>
+                <li class="redline-item">
+                  故障周周讲评审：禁止团队内部不评审，直接上部门进行评审。并且一份故障周周讲禁止在部门评审次数超过4次；
+                </li>
+                <li class="redline-item">故障定位：禁止开发不上环境定位，直接给出结论。</li>
+                <li class="redline-item">故障周周讲识别到故障，经过治理后还泄露到工程现场；</li>
+                <li class="redline-item">故障横推：其他团队横推的故障，在本团队继续泄露同样的故障；</li>
+                <li class="redline-item">故障横推：内部发现的影响业务中断的故障，解决后，在工程现场出现泄露；</li>
+              </ul>
+            </td>
+            <td class="penalty">
+              <p>未造成严重工程故障：</p>
+              <p><strong>部门通报</strong></p>
+              <p>造成严重工程故障：</p>
+              <p><strong>以波分中心质量奖惩规则为主</strong></p>
+            </td>
+            <td class="links">
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/cc1515ae3aa44485a674a5c77a57ccc4/view"
+                target="_blank"
+                >运维-质量-详设故障和编码故障区分标准</a
+              ><br />
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/ed464983224c47be9ce705ce0788ba71/view"
+                target="_blank"
+                >运维-质量-故障转需求</a
+              ><br />
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/abef340d79624cfa8c87583365796b0e/view"
+                target="_blank"
+                >运维-质量-RDC复盘</a
+              ><br />
+              <a
+                href="https://i.zte.com.cn/#/space/c5dbe928c3f54634922abbf7012bc8c4/wiki/page/79c0f36cfd6e40cb8368cbe5ca8c34e7/view"
+                target="_blank"
+                >运维-质量-iChange规范</a
+              >
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="last-update">最后更新时间：2025-04-30 14:48:34</div>
+      <footer>&copy; 2025 波分产品研发中心 - 软件开发一部 | 内部质量管理文档</footer>
+    </div>
+  </body>
+</html>
+
+`);
+</script>
+
+<style scoped></style>

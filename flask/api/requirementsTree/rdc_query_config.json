@@ -1,0 +1,57 @@
+[
+  {
+    "scope": "智能OTN",
+    "queries": [
+      {
+        "url": "https://rdcloud.zte.com.cn/uportal/rd-uportal/workspaces/OTNSW/apps/wim/queries?wicViewId=69f32df2738f3266ba3349dc&teamId=bdv_105441&tenantId=10001",
+        "milestone_filter": "智能OTN V3.00R1P01",
+        "project_name": "智能OTN V3.00"
+      },
+      {
+        "url": "https://rdcloud.zte.com.cn/uportal/rd-uportal/workspaces/OTNSW/apps/wim/queries/5468413?type=root1&teamId=bdv_105441&tenantId=10001",
+        "milestone_filter": "智能OTN V3.00R2",
+        "project_name": "智能OTN V3.00"
+      }
+    ]
+  },
+  {
+    "scope": "M721",
+    "queries": [
+      {
+        "url": "https://rdcloud.zte.com.cn/uportal/rd-uportal/workspaces/OTNSW/apps/wim/queries?wicViewId=6a2168cdb025a927fa301f53&teamId=bdv_105441&tenantId=10001",
+        "milestone_filter": "M721 V5.50R1",
+        "project_name": "ZXMP M721 V5.50"
+      },
+      {
+        "url": "https://rdcloud.zte.com.cn/uportal/rd-uportal/workspaces/OTNSW/apps/wim/queries?wicViewId=6a2168a6063a66638b31b165&teamId=bdv_105441&tenantId=10001",
+        "milestone_filter": "M721 V5.50R2",
+        "project_name": "ZXMP M721 V5.50"
+      }
+    ]
+  },
+  {
+    "scope": "NTON",
+    "queries": [
+      {
+        "url": "https://rdcloud.zte.com.cn/uportal/rd-uportal/workspaces/OTNSW/apps/wim/queries?wicViewId=6a2118db036f50786ce280a2&teamId=bdv_105441&tenantId=10001",
+        "milestone_filter": "NTON V1.00",
+        "project_name": "ZXONE NTON V1.00"
+      }
+    ]
+  },
+  {
+    "scope": "SRV",
+    "queries": [
+      {
+        "url": "https://rdcloud.zte.com.cn/uportal/rd-uportal/workspaces/OTNSW/apps/wim/queries?wicViewId=6a212534b91d2355cbd7923f&teamId=bdv_105441&tenantId=10001",
+        "milestone_filter": "光模块",
+        "project_name": "业务类型"
+      },
+      {
+        "url": "https://rdcloud.zte.com.cn/uportal/rd-uportal/workspaces/OTNSW/apps/wim/queries?wicViewId=6a216ebb35bc1f4158b2216b&teamId=bdv_105441&tenantId=10001",
+        "milestone_filter": "fgOTN",
+        "project_name": "业务类型"
+      }
+    ]
+  }
+]

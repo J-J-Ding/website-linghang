@@ -1,0 +1,27 @@
+export default {
+  loginTitle: '波分研发中心',
+  noAccount: '使用公司工号密码登录',
+  existAccount: '已有账号?',
+  createAccount: '',
+  remember: '记住账号',
+  forget: '忘记账号',
+  signIn: '登录',
+  register: '注册',
+  refresh: '刷新',
+  wechatLogin: '使用微信扫一扫登录',
+  accountLogin: '使用账号登录',
+  phoneLogin: '使用手机号登录',
+  input: {
+    account: '请输入工号',
+    password: '请输入密码',
+    phone: '请输入手机号',
+    verification: '请输入验证码',
+  },
+  required: {
+    account: '账号必填',
+    phone: '手机号必填',
+    password: '密码必填',
+    verification: '验证码必填',
+  },
+  sendVerification: '发送验证码',
+};

@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iChange规范性检查要点及打分规则</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 28px;
+        }
+        
+        .background {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .modification-record {
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            color: #2c3e50;
+            margin: 25px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+        }
+        
+        h3 {
+            color: #34495e;
+            margin: 20px 0 10px 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        .check-item {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #3498db;
+        }
+        
+        .reference {
+            margin-top: 40px;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        
+        .reference ul {
+            list-style-type: none;
+        }
+        
+        .reference li {
+            margin-bottom: 10px;
+        }
+        
+        .reference a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        
+        .reference a:hover {
+            text-decoration: underline;
+        }
+        
+        .update-time {
+            text-align: right;
+            margin-top: 20px;
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        
+        .scoring-table {
+            margin-top: 15px;
+            width: 100%;
+        }
+        
+        .scoring-table th {
+            background-color: #2c3e50;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>iChange规范性检查要点及打分规则</h1>
+        </header>
+        
+        <section class="background">
+            <h2>背景</h2>
+            <p>从2023年7月起故障管理全部切换到iChange，因新系统操作流程的改变，原先的EC管理规范、检查标准不再完全适用iChange系统，根据iChange系统使用规则，重新梳理iChange故障处理流程，处理规则。</p>
+        </section>
+        
+        <section class="modification-record">
+            <h2>修改记录</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>日期</th>
+                        <th>变更内容</th>
+                        <th>变更依据</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>2024-01-31</td>
+                        <td>字段拆分影响，修订变更指派研究和变更影响分析两个字段检查规则及打分规则</td>
+                        <td><a href="https://i.zte.com.cn/#/shared/bc84bedc68074c9588b8b6848919c96c/wiki/page/c5e08eb0ab8a4286bf98486c73d24739/view" target="_blank">变更请求：变更影响分析字段拆分、填写内容'校验功能'升级</a></td>
+                    </tr>
+                    <tr>
+                        <td>2024-09-09</td>
+                        <td>变更指派研究和变更影响分析拆分成2条检查项，同时修订打分标准</td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>2025-02-27</td>
+                        <td>修改变更指派研究和变更影响分析检查项（序号1、2），修订打分标准</td>
+                        <td><a href="https://i.zte.com.cn/index/ispace/#/space/97bcb103724e478a8df067226cf396f5/wiki/page/755dc4d717824e1bab66f3f982310938/view" target="_blank">变更影响分析应从哪些方面入手？</a></td>
+                    </tr>
+                    <tr>
+                        <td>2025-05-27</td>
+                        <td>修订故障转需求，0分标准2 处理意见中已记录决策内容或转需求的结论且完成工作项关联，但需求状态未被采纳（未到达"已采纳"及后面的状态，已废弃、已拒绝、新建都算无效状态，但如需求废弃/拒绝等变更有决策记录则不作0分处理，25.5修订），0分</td>
+                        <td>转需求后，需求的处理按 <a href="https://i.zte.com.cn/index/ispace/#/space/6ceb1c0d972d48bb9568b0842f27bd0e/wiki/page/e938d1f202124dec9a9e342ea4ee9a6e/view" target="_blank">02 需求-有线需求端到端管理要求（类终端产品）</a> <a href="https://i.zte.com.cn/index/ispace/#/space/6ceb1c0d972d48bb9568b0842f27bd0e/wiki/page/45b01847f23e46e89596e93daf0786a6/view" target="_blank">02 需求-有线需求端到端管理要求（系统产品）</a></td>
+                    </tr>
+                    <tr>
+                        <td>2025-07-24</td>
+                        <td>修订变更请求-指派验证，使用情形补充特殊情形，责任人补充指派验证操作人</td>
+                        <td><a href="https://i.zte.com.cn/index/ispace/#/space/6ceb1c0d972d48bb9568b0842f27bd0e/wiki/page/b3237662b1034722b179fc2bdc3181f7/view" target="_blank">08 质量管理-有线iChange故障处理指引V1.0</a> 5.1.5. 变更请求-指派验证的处理指引</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+        
+        <section>
+            <h2>iChange 检查项</h2>
+            
+            <!-- 检查项1 -->
+            <div class="check-item">
+                <h3>1. 故障处理-变更影响分析</h3>
+                <p><strong>场景：</strong>通用</p>
+                <p><strong>使用情形：</strong>通用</p>
+                <p><strong>检查要点：</strong></p>
+                <ul>
+                    <li>波及功能模块（必填）（注：25年3月以后单据必查）</li>
+                    <li>波及版本（必填，结构平台可选"不涉及"）</li>
+                    <li>其他影响：
+                        <ul>
+                            <li>产品设计-产品可靠性的影响（硬件项目必填，软件类项目可选"不涉及"）</li>
+                            <li>产品设计-兼容性的影响（必填）</li>
+                            <li>工程影响-安装/调试的影响（必填）</li>
+                            <li>工程影响-维护/升级的影响（必填，结构平台可选"不涉及"）</li>
+                            <li>工程影响-生产工艺影响（必填，软件类项目可选"不涉及"）</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p><strong>辅助字段：</strong>无</p>
+                <p><strong>责任人：</strong>指派实施负责人（CCB）——一般也是变更研究负责人</p>
+                
+                <h4>打分标准：</h4>
+                <table class="scoring-table">
+                    <tr>
+                        <th>分数</th>
+                        <th>标准</th>
+                    </tr>
+                    <tr>
+                        <td>0分</td>
+                        <td>【波及功能模块】、【波及版本】、【其他影响】3个字段中所有必填项存在空白或均无有效内容</td>
+                    </tr>
+                    <tr>
+                        <td>1分</td>
+                        <td>【波及功能模块】、【波及版本】、【其他影响】3个字段中所有必填项均填写，且1项内容有效</td>
+                    </tr>
+                    <tr>
+                        <td>2分</td>
+                        <td>【波及功能模块】、【波及版本】、【其他影响】3个字段中所有必填项均填写，且2项内容有效</td>
+                    </tr>
+                    <tr>
+                        <td>3分</td>
+                        <td>【波及功能模块】、【波及版本】、【其他影响】3个字段中所有必填项均填写，且所有内容基本有效</td>
+                    </tr>
+                    <tr>
+                        <td>4分</td>
+                        <td>【波及功能模块】、【波及版本】、【其他影响】3个字段中所有必填项均填写，且所有内容详实有效，无歧义</td>
+                    </tr>
+                    <tr>
+                        <td>5分</td>
+                        <td>【波及功能模块】、【波及版本】、【其他影响】3个字段中所有必填项均填写，且所有内容详实有效，无歧义，此外【其他影响】中也填写了所有非必填项的分析结果</td>
+                    </tr>
+                </table>
+                <p><strong>备注：</strong>字段位置示意图</p>
+            </div>
+            
+            <!-- 检查项2 -->
+            <div class="check-item">
+                <h3>2. 故障处理-指派变更研究（变更研究结论）</h3>
+                <p><strong>场景：</strong>故障指派变更研究时</p>
+                <p><strong>使用情形：</strong>AB等级故障必须"指派研究"，CD等级故障可选；所有需变更故障均需进行评估和分析变更影响</p>
+                <p><strong>检查要点：</strong>研究结论（必填）</p>
+                <p><strong>模板：</strong></p>
+                <ul>
+                    <li>【1、原因分析（必填）】</li>
+                    <li>【2、更改方案（必填）】</li>
+                    <li>【3、详细修改说明】</li>
+                    <li>【4、修改影响分析】</li>
+                </ul>
+                <p><strong>辅助字段：</strong>历史信息、历史意见</p>
+                <p><strong>责任人：</strong>研究负责人</p>
+                
+                <h4>打分标准：</h4>
+                <table class="scoring-table">
+                    <tr>
+                        <th>分数</th>
+                        <th>标准</th>
+                    </tr>
+                    <tr>
+                        <td>0分</td>
+                        <td>【研究结论】中的原因分析和更改方案存在空白或均无有效内容</td>
+                    </tr>
+                    <tr>
+                        <td>1分</td>
+                        <td>【研究结论】中的原因分析和更改方案均填写，且1项内容基本有效</td>
+                    </tr>
+                    <tr>
+                        <td>2分</td>
+                        <td>【研究结论】中的原因分析和更改方案均填写，且2项内容基本有效</td>
+                    </tr>
+                    <tr>
+                        <td>3分</td>
+                        <td>【研究结论】中的原因分析和更改方案均填写，且2项内容详实有效，无歧义</td>
+                    </tr>
+                    <tr>
+                        <td>4分</td>
+                        <td>【研究结论】中的原因分析和更改方案均填写，且2项内容详实有效，无歧义，此外还填写了详细修改说明和修改影响分析中的1项非必填内容</td>
+                    </tr>
+                    <tr>
+                        <td>5分</td>
+                        <td>【研究结论】中的原因分析和更改方案均填写，且2项内容详实有效，无歧义，此外还填写了详细修改说明和修改影响分析中的2项非必填内容</td>
+                    </tr>
+                </table>
+                <p><strong>备注：</strong>字段位置示意图</p>
+            </div>
+            
+            <!-- 这里继续添加其他检查项，按照相同格式 -->
+            <!-- 由于内容较多，这里只展示前两个检查项作为示例 -->
+            
+        </section>
+        
+        <section class="reference">
+            <h2>引入参考</h2>
+            <ul>
+                <li><a href="https://i.zte.com.cn/#/space/bc84bedc68074c9588b8b6848919c96c/wiki/page/a8c15bce0fda456580bb5029fe0d48bd/view" target="_blank">iChange 变更管理模型</a></li>
+                <li><a href="https://i.zte.com.cn/#/space/bc84bedc68074c9588b8b6848919c96c/wiki/page/e74440ca137744e4a9fef575c16752b5/view" target="_blank">iChange用户使用指南</a></li>
+                <li><a href="https://i.zte.com.cn/#/space/bc84bedc68074c9588b8b6848919c96c/wiki/page/819884126b104746802b63328d465fff/view" target="_blank">iChange FAQ</a></li>
+                <li><a href="https://i.zte.com.cn/#/shared/da0354fe730246beb2f6fdd135ce9111/wiki/page/b447bd9c6efc4b329d14f269d243a471/view" target="_blank">2024-12-18 变更波及影响分析模板更新</a></li>
+            </ul>
+        </section>
+        
+        <div class="update-time">
+            <p>最后更新时间：2025-09-10 18:39:25</p>
+        </div>
+    </div>
+</body>
+</html>

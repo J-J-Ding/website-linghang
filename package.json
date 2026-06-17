@@ -1,0 +1,19 @@
+{
+  "name": "website-linghang",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "echarts": "^5.6.0",
+    "tdesign-vue-next": "^1.13.2",
+    "vue": "^3.4.21"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.4",
+    "vite": "^5.4.21"
+  }
+}

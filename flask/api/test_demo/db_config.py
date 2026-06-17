@@ -1,0 +1,6 @@
+import os
+DB_HOST_DEMO = "10.239.69.17"
+DB_USER_DEMO = "root"
+DB_PASSWORD_DEMO = os.getenv('DB_PASSWORD_DEMO')
+DB_DATABASE_DEMO = "test"
+DB_PORT_DEMO = 3306

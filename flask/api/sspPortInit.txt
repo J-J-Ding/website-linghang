@@ -1,0 +1,470 @@
+文件名：sspPortInit.h
+```c
+/*============================================================================*/
+/*  版权声明 : Copyright (c) 1998-2008 中兴通讯股份有限公司传输北京软件开发部 */
+/*  系统名称 : ZXONE 8600光传输系统                                           */
+/*  文 件 名 : sspPortInit.h                                                      */
+/*  功能描述 :                                                                */
+/*  创 建 人 : liuxi                                                         */
+/*  文件版本 : p02                                                            */
+/*  创建日期 : 2011.11.17                                                      */
+/*============================================================================*/
+/*  修改记录                                                                  */
+/*  日期         版本            修改人          修改摘要                     */
+/*============================================================================*/
+#ifndef _SSPOSU_H
+#define _SSPOSU_H
+
+/*============================================================================*/
+/* 常量定义                                                                   */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 宏定义                                                                     */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 数据类型                                                               */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 函数声明                                                                   */
+/*============================================================================*/
+INT32 SSP_PORT_Init(VOID);
+INT32 sspPortInfoInit();
+void sspPortClientEnableDelay();
+UINT16 sspGetDelyUPFlag(VOID);
+#endif
+```
+
+文件名：sspPortInit.c
+```c
+/*============================================================================*/
+/*  版权声明 : Copyright (c) 1998-2008 中兴通讯股份有限公司波分软件开发一部   */
+/*  系统名称 : 光传输系统                                                     */
+/*  文 件 名 : sspPortInit.c                                                  */
+/*  功能描述 :                                                                */
+/*  创 建 人 :                                                                */
+/*  文件版本 :                                                                */
+/*  创建日期 :                                                                */
+/*============================================================================*/
+/*  修改记录                                                                  */
+/*  日期         版本            修改人          修改摘要                     */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 包含的标准库或者其他非标准库头文件                                         */
+/*============================================================================*/
+/* include */
+#include "commdef.h"
+#include "opmod_common.h"
+/* frm */
+#include "l2_common.h"
+#include "sspErrorNo.h"
+#include "sspEvent.h"
+#include "sspApp.h"
+/* supp */
+#include "sspDevice.h"
+#include "sspPortPhyApi.h"
+#include "sspPortHwApi.h"
+/* plat */
+#include "scmd_public.h"
+#include "sspDeviceMac.h"
+#include "sspTrunkOuterApi.h"
+#include "sspDlagOuterApi.h"
+#include "sspMclagOuterApi.h"
+/* plat/port */
+#include "sspPortCmd.h"
+#include "sspPortApi.h"
+#include "sspPortLink.h"
+#include "sspPortSync.h"
+#include "sspPortPerfAlm.h"
+
+
+/*============================================================================*/
+/* 常量定义                                                                   */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 宏定义                                                                     */
+/*============================================================================*/
+/* Started by AICoder, pid:e5373fbf119f59a1456c090aa0348d0efaf79fe6 */
+#define CODE_PORT_TYPE          0x001E     /* 端口类型 */
+#define CODE_PORT_LINK          0x0010     /* 端口link */
+#define CODE_PORT_FLOW_CONTROL  0x0008     /* 流控使能 */
+#define CODE_PORT_SPEED         0x0003     /* 端口速率 */
+#define CODE_PORT_DUPLEX        0x0002     /* 端口双工 */
+#define CODE_PORT_NEGOTIATION   0x0001     /* 端口自协商 */
+#define CODE_PORT_ENABLE        0x0005     /* 端口启用 */
+/* Ended by AICoder, pid:e5373fbf119f59a1456c090aa0348d0efaf79fe6 */
+
+#define SSP_CLIENT_PORT_DELAY_UP_TIME   60
+
+typedef enum{
+    PORT_DISABLE_STAT = 0,
+    PORT_ENABLE_STAT,
+}SSP_PORT_ENABLE_STAT_E;
+
+/*============================================================================*/
+/* 数据类型                                                                   */
+/*============================================================================*/
+
+/*============================================================================*/
+/* 全局变量                                                                   */
+/*============================================================================*/
+UINT16 g_ucPortUpDelay = SSP_FALSE;
+UINT16 g_ucDelyUPFlag = SSP_FALSE;
+
+static UINT32   s_ulPortScanTaskId = 0;
+static UINT32   s_ulPortStatTaskId = 0;
+
+/*============================================================================*/
+/* 函数声明                                                                   */
+/*============================================================================*/
+extern VOID get_fru_info(ULONG ulType, UINT8 *pTmp);
+
+/*============================================================================*/
+/* 函数实现                                                                   */
+/*============================================================================*/
+
+/*============================================================================*/
+/*  函数名 : sspGetDelyUPFlag                                                  */
+/*  输  入 : 无                                                                */
+/*  输  出 : 无                                                                */
+/*  返回值 : 延迟UP标志位状态 (UINT16)                                         */
+/*  描  述 : 获取全局端口延迟UP标志位状态                                       */
+/*  作  者 :                                                                   */
+/*  版  本 :                                                                   */
+/*  日  期 :                                                                   */
+/*============================================================================*/
+UINT16 sspGetDelyUPFlag()
+{
+    return g_ucDelyUPFlag;
+}
+
+/*============================================================================*/
+/*  函数名 : sspGetPortUpDelay                                                */
+/*  输  入 : 无                                                                */
+/*  输  出 : 无                                                                */
+/*  返回值 : 端口UP延迟状态 (UINT16)                                           */
+/*  描  述 : 获取全局端口UP延迟状态                                            */
+/*  作  者 :                                                                   */
+/*  版  本 :                                                                   */
+/*  日  期 :                                                                   */
+/*============================================================================*/
+UINT16 sspGetPortUpDelay(VOID)
+{
+    return g_ucPortUpDelay;
+}
+
+/*============================================================================*/
+/*  函数名 : sspPortClientEnable                                              */
+/*  输  入 : 无                                                                */
+/*  输  出 : 无                                                                */
+/*  返回值 : 无                                                                */
+/*  描  述 : 启用所有客户端端口MAC层功能                                       */
+/*          1. 清除端口延迟UP标志                                              */
+/*          2. 遍历所有客户端端口设置端口信息                                  */
+/*          3. 记录端口启用日志                                                */
+/*  作  者 :                                                                   */
+/*  版  本 :                                                                   */
+/*  日  期 :                                                                   */
+/*============================================================================*/
+/*防止端口实际link 状态跟网管不一致*/
+void sspPortClientEnable()
+{
+    UINT16 usPortId = 0;
+    SSP_PORT_INFO_S *pstPortInfo = NULL;
+    STATUS ret = SSP_OK;
+
+    //延时UP标记位清除，所有面板端口都mac enable
+    g_ucPortUpDelay = SSP_FALSE;
+
+    for(usPortId = SSP_DEVICE_CLIENT_MIN; usPortId <= SSP_DEVICE_CLIENT_MAX; usPortId++)
+    {
+        pstPortInfo = sspPortInfoGet(usPortId);
+
+        ret = SSP_PORT_InfoSet(usPortId, pstPortInfo);
+        if(SSP_OK != ret)
+        {
+            PORT_LOG_ERR(" port %d set portInfo error",usPortId);
+            continue;
+        }
+        pstPortInfo = NULL;
+    }
+
+    g_ucDelyUPFlag = SSP_FALSE;
+    PORT_LOG_NOTICE("=== ALL Client  enable ");
+    return;
+}
+
+
+/*============================================================================*/
+/*  函数名 : sspPortClientDisable                                             */
+/*  输  入 : 无                                                                */
+/*  输  出 : 无                                                                */
+/*  返回值 : 无                                                                */
+/*  描  述 : 禁用所有客户端端口MAC层功能                                       */
+/*          1. 设置端口延迟UP标志                                              */
+/*          2. 遍历所有客户端端口禁用MAC功能                                   */
+/*          3. 记录端口禁用日志                                                */
+/*  作  者 :                                                                   */
+/*  版  本 :                                                                   */
+/*  日  期 :                                                                   */
+/*============================================================================*/
+void sspPortClientDisable()
+{
+    UINT16 usPortId = 0;
+
+    //初始化时，先将所有端口都disable，为了D-LAG或者LAG，在本端上电过程中，让对端先不倒换
+    for(usPortId = SSP_DEVICE_CLIENT_MIN; usPortId <= SSP_DEVICE_CLIENT_MAX; usPortId++)
+    {
+        SSP_HW_PORT_PortMacEnableSet(usPortId, PORT_ADMIN_DISABLE);
+    }
+    /*为了应对LAG和D-LAG在单板初始化的时候，端口震荡，设置延迟UP标记位*/
+    g_ucPortUpDelay = SSP_TRUE;
+    g_ucDelyUPFlag = SSP_TRUE;
+    PORT_LOG_ERR(" === ALL Client mac disable  ");
+    return;
+}
+
+/*============================================================================*/
+/*  函数名 : sspPortClientEnableDelay                                         */
+/*  输  入 : 无                                                                */
+/*  输  出 : 无                                                                */
+/*  返回值 : 无                                                                */
+/*  描  述 : 延时启用客户端端口                                                */
+/*          1. 延时60秒等待系统稳定                                            */
+/*          2. 调用sspPortClientEnable启用端口                                 */
+/*          3. 记录端口延时启用日志                                            */
+/*  作  者 :                                                                   */
+/*  版  本 :                                                                   */
+/*  日  期 :                                                                   */
+/*============================================================================*/
+void sspPortClientEnableDelay( )
+{
+    //初始化后延时1分钟s再UP，在收到 0x1a19 命令后，会直接将端口UP，做个保护
+    sspTaskDelay(SSP_CLIENT_PORT_DELAY_UP_TIME);
+
+    sspPortClientEnable();
+    PORT_LOG_ERR(" === ALL Client mac enable  ");
+}
+
+/* Started by AICoder, pid:yac1ate90axbfeb142a30bb3b010ed586db1e58a */
+/*============================================================================*/
+/*  函数名 : sspPortDefaulteGet                                               */
+/*  输  入 : usPortId - 端口号                                                 */
+/*           pstPortInfo - 端口信息结构体指针                                  */
+/*  输  出 : 无                                                                */
+/*  返回值 : 无                                                                */
+/*  描  述 : 获取端口默认配置信息                                              */
+/*          1. 初始化端口信息结构体                                            */
+/*          2. 从设备属性表获取端口配置参数                                    */
+/*          3. 设置端口类型、速率、协商模式等默认参数                         */
+/*  作  者 :                                                                   */
+/*  版  本 :                                                                   */
+/*  日  期 :                                                                   */
+/*============================================================================*/
+VOID sspPortDefaulteGet(UINT16 usPortId, SSP_PORT_INFO_S *pstPortInfo)
+{
+    INT32 ret = SSP_OK;
+    UINT16 usAttr = 0;
+    PortAttribute *ptPortAttributes = NULL;
+
+    SSP_MEMSET(pstPortInfo, sizeof(SSP_PORT_INFO_S), 0, sizeof(SSP_PORT_INFO_S));
+
+    pstPortInfo->usPortId   = usPortId;
+    pstPortInfo->ulEnable   = PORT_ADMIN_ENABLE;
+    pstPortInfo->ulLoopback = PORT_LOOPBACK_NULL;
+    pstPortInfo->ulPortType = PORT_FIBER_GE;
+    pstPortInfo->ulAutoNeg  = PORT_AUTONEG_ENABLE;
+    pstPortInfo->ulDuplex   = PORT_DUPLEX_FULL;
+    pstPortInfo->ulSpeed    = PORT_SPEED_1000;
+    pstPortInfo->ulFlowCtrl = PORT_FLOWCTRL_RX_TX_DISABLE;
+
+    for (usAttr = 0; usAttr < MAX_ATTRIBUTES; usAttr++)
+    {
+        ptPortAttributes = devicePortAttr2VlaueGet(usAttr);
+
+        switch (ptPortAttributes->id)
+        {
+            case CODE_PORT_TYPE:
+                pstPortInfo->ulPortType = ptPortAttributes->value;
+                break;
+            case CODE_PORT_SPEED:
+                pstPortInfo->ulSpeed = ptPortAttributes->value;
+                break;
+            case CODE_PORT_NEGOTIATION:
+                pstPortInfo->ulAutoNeg = ptPortAttributes->value;
+                break;
+            case CODE_PORT_DUPLEX:
+                pstPortInfo->ulDuplex = ptPortAttributes->value;
+                break;
+            case CODE_PORT_FLOW_CONTROL:
+                pstPortInfo->ulFlowCtrl = ptPortAttributes->value;
+                break;
+            default:
+                // Handle unknown attribute ID if necessary
+                break;
+        }
+    }
+
+    return;
+}
+/* Ended by AICoder, pid:yac1ate90axbfeb142a30bb3b010ed586db1e58a */
+
+/*============================================================================*/
+/*  函数名 : sspPortRegisterCallBack                                           */
+/*  输  入 : 无                                                                */
+/*  输  出 : 无                                                                */
+/*  返回值 : 无                                                                */
+/*  描  述 : 端口模块supp回调plat函数注册                                         */
+/*  作  者 :                                                                   */
+/*  版  本 :                                                                   */
+/*  日  期 :                                                                   */
+/*============================================================================*/
+/*  修改记录                                                                    */
+/*  日期            版本            修改人          修改摘要                      */
+/*============================================================================*/
+VOID sspPortRegisterCallBack(VOID)
+{
+    HW_MODULE_CALLBACK tPortCallBack = {NULL};
+    tPortCallBack.port_get_link_status = sspPortLinkStatGet;
+    tPortCallBack.trunk_port_linkup = sspOuterSetTrunklinkEvent;
+    tPortCallBack.trunk_port_linkdown = sspOuterSetTrunklinkEvent;
+    tPortCallBack.dlag_link_up = sspOuterSetDlaglinkUp;
+    tPortCallBack.dlag_link_down = sspOuterSetDlaglinkDown;
+    tPortCallBack.mclag_link_up = sspOuterSetMclaglinkUp;
+    tPortCallBack.mclag_link_down = sspOuterSetMclaglinkDown;
+    tPortCallBack.pub_get_port_up_delay = sspGetPortUpDelay;
+    sspHWPortSetCallBack(&tPortCallBack);
+    return;
+}
+
+/*============================================================================*/
+/*  函数名 : sspPortInfoInit                                                  */
+/*  输  入 : 无                                                                */
+/*  输  出 : 无                                                                */
+/*  返回值 : 操作结果 (INT32)                                                  */
+/*  描  述 : 初始化所有端口信息                                               */
+/*          1. 遍历所有客户端端口                                              */
+/*          2. 设置端口初始状态（链路状态、SFP状态等）                        */
+/*  作  者 :                                                                   */
+/*  版  本 :                                                                   */
+/*  日  期 :                                                                   */
+/*============================================================================*/
+INT32 sspPortInfoInit()
+{
+    INT32 ret = SSP_OK;
+    UINT16 usPortId = 0;
+    SSP_PORT_INFO_S stPortInfo = {0};
+    SSP_PORT_INFO_S *ptPortInfo = NULL;
+
+    for (usPortId = SSP_DEVICE_CLIENT_MIN; usPortId <= SSP_DEVICE_CLIENT_MAX; usPortId++)
+    {
+        sspPortDefaulteGet(usPortId, &stPortInfo);
+        ret |= SSP_PORT_InfoSet(usPortId, &stPortInfo);
+
+        ptPortInfo = sspPortInfoGet(usPortId);
+        ptPortInfo->usPortId    = usPortId;
+        ptPortInfo->ulLink      = PORT_LINK_DOWN;
+        ptPortInfo->ulSfpType   = OP_UNKNOW_CONNECTOR;
+        ptPortInfo->ulSfpStat   = PORT_SFP_OFFLINE;
+    }
+
+    return ret;
+}
+
+/*============================================================================*/
+/*  函数名 : SSP_PORT_Init                                                    */
+/*  输  入 : 无                                                                */
+/*  输  出 : 无                                                                */
+/*  返回值 : 初始化结果 (INT32)                                                */
+/*  描  述 : 端口模块初始化入口函数                                            */
+/*          1. 创建端口互斥信号量                                             */
+/*          2. 初始化硬件端口模块                                              */
+/*          3. 创建端口管理任务和统计任务                                      */
+/*          4. 注册事件回调函数                                                */
+/*  作  者 :                                                                   */
+/*  版  本 :                                                                   */
+/*  日  期 :                                                                   */
+/*============================================================================*/
+INT32 SSP_PORT_Init(VOID)
+{
+    INT32 ret = SSP_OK;
+
+    /*端口模块互斥信号量初始化*/
+    if (SSP_OK != sspPortSemIdCreate())
+    {
+        return SSP_ERROR;
+    }
+    /*端口模块带宽互斥信号量初始化*/
+    if (SSP_OK != sspPortBandwidthSemIdCreate())
+    {
+        return SSP_ERROR;
+    }
+
+    /* 端口性能表项创建和初始化 */
+    ret = sspPortStatCurCreate();
+    if(SSP_OK != ret)
+    {
+        return SSP_ERROR;
+    }
+    ret = sspPortStatPreCreate();
+    if(SSP_OK != ret)
+    {
+        return SSP_ERROR;
+    }
+
+    sspPortStatHistoryClearAll();
+
+    sspPortRegisterCallBack();
+
+    EventMgr_EventRegister(SSP_EVENT_PORT_UP, SSP_MODULE_PORT, (void *)sspPortLinkCallback);
+    EventMgr_EventRegister(SSP_EVENT_PORT_DOWN, SSP_MODULE_PORT, (void *)sspPortLinkCallback);
+
+    ret = SSP_HW_PORT_Init();
+    if (SSP_OK != ret)
+    {
+        PORT_LOG_ERR("SSP_HW_PORT_Init Error!\n");
+        return SSP_ERROR;
+    }
+    sspPortClientDisable();
+
+    /* 软件表项初始化 */
+    sspPortInfoClear();
+    ret = sspPortInfoInit();
+    if (SSP_OK != ret)
+    {
+        PORT_LOG_ERR("sspPortInfoInit Error!\n");
+    }
+
+    /* 配置表项初始化 */
+    sspAllPortCfgInit();
+    sspAllPortLoopbackCfgInit();
+
+    ret |= sspTaskCreate((UINT8 *)SSP_TASK_PORT_SCAN_NAME,
+                          sspAppPriGet((INT8 *)SSP_TASK_PORT_SCAN_NAME),
+                          sspAppStackSizeGet((INT8 *)SSP_TASK_PORT_SCAN_NAME),
+                          sspPortManageTask,
+                          0,
+                          &s_ulPortScanTaskId);
+    if (SSP_OK != ret)
+    {
+        return SSP_ERROR;
+    }
+
+    /* 端口流量计数采集任务 */
+    ret = sspTaskCreate((UINT8 *)SSP_TASK_PORT_STAT_NAME,
+                         sspAppPriGet((INT8 *)SSP_TASK_PORT_STAT_NAME),
+                         sspAppStackSizeGet((INT8 *)SSP_TASK_PORT_STAT_NAME),
+                         sspPortStatTask,
+                         0,
+                         &s_ulPortStatTaskId);
+    if (SSP_OK != ret)
+    {
+        return SSP_ERROR;
+    }
+
+    return SSP_OK;
+}```
