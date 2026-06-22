@@ -27,6 +27,8 @@ from componentTree.api_component_graph import (
     API_Knowledge_component_graph_refresh,
     API_Knowledge_component_graph_stats
 )
+from featureTreeNew.api_feature_tree import API_Knowledge_feature_tree, API_Knowledge_feature_detail, API_Knowledge_feature_tree_refresh
+from featureTreeNew.api_feature_graph import API_Knowledge_feature_graph_get, API_Knowledge_feature_graph_refresh
 from componentTree.data_model import KNOWLEDGE_COMPONENT_TREE
 from componentTree.db_config import DB_DATABASE_KNOWLEDGE_ENGINEERING, DB_USER, DB_PASSWORD, DB_PORT
 from knowledge_dashboard.db_config import DB_DATABASE_KNOW_BOARD, DB_USER, DB_PASSWORD, DB_PORT
@@ -265,6 +267,13 @@ app.route('/api/api_data/API_Knowledge_component_graph_layout_save', methods=['P
 app.route('/api/api_data/API_Knowledge_component_graph_layout_list', methods=['POST'])(API_Knowledge_component_graph_layout_list)
 app.route('/api/api_data/API_Knowledge_component_graph_refresh', methods=['POST'])(API_Knowledge_component_graph_refresh)
 app.route('/api/api_data/API_Knowledge_component_graph_stats', methods=['POST'])(API_Knowledge_component_graph_stats)
+
+# 新版特性树 API 路由
+app.route('/api/api_data/API_Knowledge_feature_tree', methods=['POST'])(API_Knowledge_feature_tree)
+app.route('/api/api_data/API_Knowledge_feature_detail', methods=['POST'])(API_Knowledge_feature_detail)
+app.route('/api/api_data/API_Knowledge_feature_tree_refresh', methods=['POST'])(API_Knowledge_feature_tree_refresh)
+app.route('/api/api_data/API_Knowledge_feature_graph_get', methods=['POST'])(API_Knowledge_feature_graph_get)
+app.route('/api/api_data/API_Knowledge_feature_graph_refresh', methods=['POST'])(API_Knowledge_feature_graph_refresh)
 
 # 需求树 API 路由
 from requirementsTree.api_requirement_tree import (

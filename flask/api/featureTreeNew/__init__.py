@@ -1,2 +1,2 @@
-"""componentTree package."""
+"""featureTreeNew package."""
 

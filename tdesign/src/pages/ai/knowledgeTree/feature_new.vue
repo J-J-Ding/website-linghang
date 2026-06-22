@@ -1,15 +1,15 @@
 <template>
-  <div class="component-main">
+  <div class="feature-main">
     <t-tabs v-model="tabValue" theme="card" @change="onTabChange">
-      <t-tab-panel value="光层业务特性（O-含L0/智控/支撑）" label="光层业务特性" :destroy-on-hide="false">
+      <t-tab-panel value="O" label="光层业务特性" :destroy-on-hide="false">
       </t-tab-panel>
-      <t-tab-panel value="电层业务特性（E-含L1/支撑）" label="电层业务特性" :destroy-on-hide="false">
+      <t-tab-panel value="E" label="电层业务特性" :destroy-on-hide="false">
       </t-tab-panel>
-      <t-tab-panel value="分组业务特性（P-含L2/支撑）" label="分组业务特性" :destroy-on-hide="false">
+      <t-tab-panel value="P" label="分组业务特性" :destroy-on-hide="false">
       </t-tab-panel>
-      <t-tab-panel value="智控协同业务特性（C）" label="智控协同业务特性" :destroy-on-hide="false">
+      <t-tab-panel value="C" label="智控协同业务特性" :destroy-on-hide="false">
       </t-tab-panel>
-      <t-tab-panel value="产品安全特性（SEC）" label="产品安全特性" :destroy-on-hide="false">
+      <t-tab-panel value="SEC" label="产品安全特性" :destroy-on-hide="false">
       </t-tab-panel>
     </t-tabs>
 
@@ -19,7 +19,7 @@
         content="确认同步iCenter数据吗?" 
         @confirm="refreshTree">
         <t-button v-show="showButton" theme="primary" variant="outline" size="small" :loading="refreshLoading">
-          组件树同步iCenter数据
+          特性树同步iCenter数据
         </t-button>
       </t-popconfirm>
       <span class="refresh-time">最近刷新时间：{{ lastRefreshTime || '未刷新' }}</span>
@@ -73,7 +73,7 @@
           <div class="section-header">
             <span class="section-title">
               <t-icon name="chart-bubble" />
-              组件关系图
+              特性关系图
             </span>
             <div class="section-actions">
               <t-button size="small" variant="outline" @click="autoLayout">
@@ -99,11 +99,11 @@
           </div>
           <div class="flowchart-container" ref="containerRef" :class="{ 'fullscreen-chart': isFullscreen }">
             <div v-if="graphLoading" class="graph-loading">
-              <t-loading size="large" text="加载组件图数据中..." />
+              <t-loading size="large" text="加载特性图数据中..." />
             </div>
             <div v-else-if="!hasGraphData && !showDetailOnly" class="graph-empty">
               <t-icon name="chart-bubble" size="48px" style="color: #c0c4cc;" />
-              <p>请点击左侧树节点查看组件关系图</p>
+              <p>请点击左侧树节点查看特性关系图</p>
             </div>
             <div v-else-if="hasGraphData" class="canvas-wrapper" ref="canvasWrapper">
               <svg 
@@ -165,7 +165,7 @@
                       'dragging': draggingNodeId === node.id
                     }"
                   >
-                    <!-- 椭圆节点（中心组件） -->
+                    <!-- 椭圆节点（中心特性） -->
                     <template v-if="node.shape === 'ellipse'">
                       <ellipse
                         :cx="node.width / 2"
@@ -213,7 +213,7 @@
 
                     <!-- 数量角标（右上角） -->
                     <circle 
-                      v-if="node.count > 0 && node.id !== centerComponentId"
+                      v-if="node.count > 0 && node.id !== centerFeatureId"
                       :cx="node.width - 12" 
                       :cy="12" 
                       r="10" 
@@ -222,7 +222,7 @@
                       stroke-width="2"
                     />
                     <text 
-                      v-if="node.count > 0 && node.id !== centerComponentId"
+                      v-if="node.count > 0 && node.id !== centerFeatureId"
                       :x="node.width - 12" 
                       :y="16" 
                       text-anchor="middle" 
@@ -328,10 +328,10 @@
             <t-loading :loading="detailLoading">
               <div class="detail-list">
                 <t-descriptions title="基础信息" bordered :column="2" :label-style="{ width: '120px' }">
-                  <t-descriptions-item label="组件/模块名称">{{ detail.basicInfo || '-' }}</t-descriptions-item>
+                  <t-descriptions-item label="特性/目录名称">{{ detail.basicInfo || '-' }}</t-descriptions-item>
                   <t-descriptions-item label="守护人">{{ detail.guardian || '-' }}</t-descriptions-item>
                   <t-descriptions-item label="状态">{{ detail.status || '-' }}</t-descriptions-item>
-                  <t-descriptions-item label="组件/模块地址">
+                  <t-descriptions-item label="特性页面地址">
                     <t-tooltip :content="detail.url" placement="top" v-if="detail.url">
                       <t-link 
                         theme="primary" 
@@ -475,11 +475,11 @@
           </div>
         </div>
 
-        <!-- 子组件清单表格（带操作列） -->
+        <!-- 子节点清单表格（带操作列） -->
         <div class="detail-section">
-          <div class="detail-label">子组件清单</div>
+          <div class="detail-label">子节点清单</div>
           <t-table
-            :data="drawerChildComponentList"
+            :data="drawerChildFeatureList"
             :columns="drawerTableColumnsWithAction"
             row-key="id"
             hover
@@ -488,8 +488,8 @@
             max-height="300"
             :row-class-name="getRowClassName"
           />
-          <div v-if="drawerChildComponentList.length === 0" class="no-data-tip">
-            暂无子组件数据
+          <div v-if="drawerChildFeatureList.length === 0" class="no-data-tip">
+            暂无子节点数据
           </div>
         </div>
 
@@ -544,19 +544,19 @@ const detailLoading = ref(false);
 const graphLoading = ref(false);
 const treeData = ref([]);
 const expandedKeys = ref([]);
-const tabValue = ref('L0');
+const tabValue = ref('O');
 const lastRefreshTime = ref('');
 const treeAbortController = ref(null);
 const showDetailOnly = ref(false);
 const forceRefresh = ref(false);
-const centerComponentId = ref(null);
+const centerFeatureId = ref(null);
 const showButton = ref(false);
 // ============ 表格相关 ============
-const childComponentList = ref([]);
-const drawerChildComponentList = ref([]);
+const childFeatureList = ref([]);
+const drawerChildFeatureList = ref([]);
 const tableLoading = ref(false);
 
-// 子组件内容相关
+// 子节点内容相关
 const selectedChildContent = ref('');
 const selectedChildName = ref('');
 const contentLoading = ref(false);
@@ -565,10 +565,10 @@ const processedChildContent = ref('');
 
 // 表格列定义（带操作列）
 const drawerTableColumnsWithAction = computed(() => {
-  // 判断当前选中的是否是章节节点
-  const isSectionNode = selectedNode.value?.type === 'section' || 
-                         selectedNode.value?.originalType === 'section' ||
-                         selectedNode.value?.typeLabel === '章节';
+  // 分析/方案节点支持直接查看内容
+  const isDocumentNode = ['analysis', 'scheme', 'sub_analysis', 'sub_scheme'].includes(selectedNode.value?.type) ||
+                         ['analysis', 'scheme'].includes(selectedNode.value?.originalType) ||
+                         ['特性分析', '特性方案', '子特性分析', '子特性方案'].includes(selectedNode.value?.typeLabel);
   
   const baseColumns = [
     { 
@@ -596,8 +596,8 @@ const drawerTableColumnsWithAction = computed(() => {
     }
   ];
   
-  // 只有章节节点才显示操作列
-  if (isSectionNode) {
+  // 只有文档节点才显示操作列
+  if (isDocumentNode) {
     return [
       ...baseColumns,
       {
@@ -648,10 +648,11 @@ const drawerTableColumns = [
 
 // ============ 汇聚分类常量 ============
 const CATEGORY_CONFIG = {
-  'module': { label: '模块', typeLabel: '模块', color: '#2ba471', bgColor: '#e6f4ea', textColor: '#0d652d', order: 1 },
-  'affected_feature': { label: '特性', typeLabel: '特性', color: '#c5221f', bgColor: '#fce8e6', textColor: '#a50e0e', order: 2 },
-  'section': { label: '章节', typeLabel: '章节', color: '#1967d2', bgColor: '#e8f0fe', textColor: '#174ea6', order: 3 },
-  'dependent_component': { label: '依赖组件', typeLabel: '依赖组件', color: '#e37318', bgColor: '#fff3e0', textColor: '#8b4a0b', order: 4 }
+  'feature': { label: '特性目录', typeLabel: '特性目录', color: '#2ba471', bgColor: '#e6f4ea', textColor: '#0d652d', order: 1 },
+  'analysis': { label: '特性分析', typeLabel: '特性分析', color: '#1967d2', bgColor: '#e8f0fe', textColor: '#174ea6', order: 2 },
+  'scheme': { label: '特性方案', typeLabel: '特性方案', color: '#c5221f', bgColor: '#fce8e6', textColor: '#a50e0e', order: 3 },
+  'related_feature': { label: '关联特性', typeLabel: '关联特性', color: '#e37318', bgColor: '#fff3e0', textColor: '#8b4a0b', order: 4 },
+  'category': { label: '目录', typeLabel: '目录', color: '#5e6ad2', bgColor: '#eef0ff', textColor: '#30368c', order: 5 }
 };
 
 // 获取行类名
@@ -660,9 +661,8 @@ const getRowClassName = ({ row }) => {
   return '';
 };
 
-// 查看子组件内容
+// 查看子节点内容
 const viewChildContent = async (row) => {
-  console.log('row666', row);
   selectedChildName.value = row.name;
   contentLoading.value = true;
   selectedChildContent.value = '';
@@ -670,7 +670,7 @@ const viewChildContent = async (row) => {
   processedChildContent.value = '';
   
   try {
-    // 如果子组件有 desc 字段，直接使用
+    // 如果子节点有 desc 字段，直接使用
     if (row.desc) {
       const isHtml = isHtmlDescription(row.desc);
       isChildHtmlContent.value = isHtml;
@@ -695,14 +695,14 @@ const viewChildContent = async (row) => {
       selectedChildContent.value = '暂无内容';
     }
   } catch (error) {
-    console.error('加载子组件内容失败:', error);
+    console.error('加载子节点内容失败:', error);
     selectedChildContent.value = `加载内容失败: ${error.message}`;
   } finally {
     contentLoading.value = false;
   }
 };
 
-// 加载子组件HTML内容
+// 加载子节点HTML内容
 const loadChildHtmlContentAsync = async (url, nodeName) => {
   try {
     let fullUrl = url;
@@ -733,7 +733,7 @@ const loadChildHtmlContentAsync = async (url, nodeName) => {
   }
 };
 
-// 处理子组件HTML内容
+// 处理子节点HTML内容
 const getProcessedHtmlContentForChild = (htmlContent) => {
   if (!htmlContent) return '';
   
@@ -747,7 +747,7 @@ const getProcessedHtmlContentForChild = (htmlContent) => {
   return content;
 };
 
-// 在新窗口打开子组件HTML
+// 在新窗口打开子节点HTML
 const openChildHtmlInNewWindow = () => {
   if (!selectedChildContent.value) return;
   
@@ -856,7 +856,7 @@ const currentSeedNode = ref(null);
 const categoryNodes = ref([]);
 // 原始子节点数据（用于表格）
 const rawChildNodes = ref([]);
-// 中心组件节点
+// 中心特性节点
 const centerNode = ref(null);
 
 const graphEdges = ref([]);
@@ -882,23 +882,28 @@ const nodePositions = reactive({});
 
 // ============ 类型颜色映射 ============
 const typeColorMap = {
-  'component': { bg: '#fff3e0', tag: '#e37318', text: '#8b4a0b', label: '组件' },
-  'dependent_component': { bg: '#fff3e0', tag: '#e37318', text: '#8b4a0b', label: '依赖组件' },
-  'module': { bg: '#e6f4ea', tag: '#2ba471', text: '#0d652d', label: '模块' },
-  'affected_feature': { bg: '#fce8e6', tag: '#c5221f', text: '#a50e0e', label: '特性' },
-  'section': { bg: '#e8f0fe', tag: '#1967d2', text: '#174ea6', label: '章节' },
-  'category_module': { bg: '#e6f4ea', tag: '#2ba471', text: '#0d652d', label: '模块' },
-  'category_feature': { bg: '#fce8e6', tag: '#c5221f', text: '#a50e0e', label: '特性' },
-  'category_section': { bg: '#e8f0fe', tag: '#1967d2', text: '#174ea6', label: '章节' },
-  'category_dependency': { bg: '#fff3e0', tag: '#e37318', text: '#8b4a0b', label: '依赖组件' }
+  'feature': { bg: '#fff7e6', tag: '#e37318', text: '#8b4a0b', label: '特性' },
+  'sub_feature': { bg: '#fff7e6', tag: '#e37318', text: '#8b4a0b', label: '子特性' },
+  'analysis': { bg: '#e8f0fe', tag: '#1967d2', text: '#174ea6', label: '特性分析' },
+  'scheme': { bg: '#fce8e6', tag: '#c5221f', text: '#a50e0e', label: '特性方案' },
+  'sub_analysis': { bg: '#e8f0fe', tag: '#1967d2', text: '#174ea6', label: '子特性分析' },
+  'sub_scheme': { bg: '#fce8e6', tag: '#c5221f', text: '#a50e0e', label: '子特性方案' },
+  'related_feature': { bg: '#fff3e0', tag: '#e37318', text: '#8b4a0b', label: '关联特性' },
+  'category': { bg: '#eef0ff', tag: '#5e6ad2', text: '#30368c', label: '目录' },
+  'category_feature': { bg: '#e6f4ea', tag: '#2ba471', text: '#0d652d', label: '特性目录' },
+  'category_analysis': { bg: '#e8f0fe', tag: '#1967d2', text: '#174ea6', label: '特性分析' },
+  'category_scheme': { bg: '#fce8e6', tag: '#c5221f', text: '#a50e0e', label: '特性方案' },
+  'category_related_feature': { bg: '#fff3e0', tag: '#e37318', text: '#8b4a0b', label: '关联特性' },
+  'category_category': { bg: '#eef0ff', tag: '#5e6ad2', text: '#30368c', label: '目录' }
 };
 
 const NODE_CONFIG = {
-  'component': { w: 280, h: 120, shape: 'ellipse' },
-  'category_module': { w: 220, h: 80, shape: 'rect' },
-  'category_feature': { w: 200, h: 80, shape: 'rect' },
-  'category_section': { w: 220, h: 80, shape: 'rect' },
-  'category_dependency': { w: 220, h: 80, shape: 'rect' }
+  'feature': { w: 280, h: 120, shape: 'ellipse' },
+  'category_feature': { w: 220, h: 80, shape: 'rect' },
+  'category_analysis': { w: 220, h: 80, shape: 'rect' },
+  'category_scheme': { w: 220, h: 80, shape: 'rect' },
+  'category_related_feature': { w: 220, h: 80, shape: 'rect' },
+  'category_category': { w: 220, h: 80, shape: 'rect' }
 };
 
 // ============ 辅助函数 ============
@@ -931,15 +936,20 @@ const normalizeRelatedItems = (items, fallbackNames) => {
 
 const getTypeDisplay = (type) => {
   const map = {
-    'component': '组件',
-    'dependent_component': '依赖组件',
-    'module': '模块',
-    'affected_feature': '特性',
-    'section': '章节',
-    'category_module': '模块',
-    'category_feature': '特性',
-    'category_section': '章节',
-    'category_dependency': '依赖组件'
+    'feature': '特性',
+    'sub_feature': '子特性',
+    'analysis': '特性分析',
+    'scheme': '特性方案',
+    'sub_analysis': '子特性分析',
+    'sub_scheme': '子特性方案',
+    'related_feature': '关联特性',
+    'category': '目录',
+    'root': '根节点',
+    'category_feature': '特性目录',
+    'category_analysis': '特性分析',
+    'category_scheme': '特性方案',
+    'category_related_feature': '关联特性',
+    'category_category': '目录'
   };
   return map[type] || type;
 };
@@ -975,13 +985,13 @@ const getNodeStroke = (node) => {
 
 const getScopeByTab = (tab) => {
   const scopeMap = {
-    'L0': 'L0',
-    'L1': 'L1',
-    'L2': 'L2',
-    'WASON': 'WASON',
-    'OSP': 'OSP'
+    'O': 'O',
+    'E': 'E',
+    'P': 'P',
+    'C': 'C',
+    'SEC': 'SEC'
   };
-  return scopeMap[tab] || 'WASON';
+  return scopeMap[tab] || 'O';
 };
 
 // ============ 树数据加载 ============
@@ -994,6 +1004,7 @@ const processTreeData = (nodes) => {
     level: node.level,
     url: node.url,
     spaceId: node.spaceId,
+    parentId: node.parentId,
     hasChildren: node.hasChildren,
     children: node.children ? processTreeData(node.children) : []
   }));
@@ -1007,14 +1018,15 @@ const loadTree = async (scope = tabValue.value) => {
 
   treeLoading.value = true;
   try {
-    const resp = await fetch(`${SERVER_API_URL}/api_data/API_Knowledge_component_tree`, {
+    const treeScope = getScopeByTab(scope);
+    const resp = await fetch(`${SERVER_API_URL}/api_data/API_Knowledge_feature_tree`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       signal: treeAbortController.value.signal,
       body: JSON.stringify({
-        tab: scope,
-        domain: scope,
-        maxLevel: 4,
+        tab: treeScope,
+        domain: treeScope,
+        maxLevel: 6,
       }),
     });
     const res = await resp.json();
@@ -1036,7 +1048,7 @@ const loadTree = async (scope = tabValue.value) => {
     if (e?.name === 'AbortError') {
       return;
     }
-    MessagePlugin.error(`读取组件树失败：${e.message || e}`);
+    MessagePlugin.error(`读取特性树失败：${e.message || e}`);
     treeData.value = [];
   } finally {
     if (treeAbortController.value?.signal?.aborted) {
@@ -1049,13 +1061,14 @@ const loadTree = async (scope = tabValue.value) => {
 const refreshTree = async () => {
   refreshLoading.value = true;
   try {
-    const resp = await fetch(`${SERVER_API_URL}/api_data/API_Knowledge_component_tree_refresh`, {
+    const treeScope = getScopeByTab(tabValue.value);
+    const resp = await fetch(`${SERVER_API_URL}/api_data/API_Knowledge_feature_tree_refresh`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        tab: tabValue.value,
-        domain: tabValue.value,
-        maxLevel: 4,
+        tab: treeScope,
+        domain: treeScope,
+        maxLevel: 6,
       }),
     });
     const res = await resp.json();
@@ -1063,10 +1076,10 @@ const refreshTree = async () => {
       throw new Error(res.message || `请求失败(${resp.status})`);
     }
     lastRefreshTime.value = res.data?.refreshedAt || '';
-    MessagePlugin.success('组件树缓存刷新成功');
+    MessagePlugin.success('特性树缓存刷新成功');
     await loadTree(tabValue.value);
   } catch (e) {
-    MessagePlugin.error(`刷新组件树失败：${e.message || e}`);
+    MessagePlugin.error(`刷新特性树失败：${e.message || e}`);
   } finally {
     refreshLoading.value = false;
   }
@@ -1077,7 +1090,7 @@ const loadDetail = async (node) => {
   detailLoading.value = true;
   tableLoading.value = true;
   try {
-    const resp = await fetch(`${SERVER_API_URL}/api_data/API_Knowledge_component_detail`, {
+    const resp = await fetch(`${SERVER_API_URL}/api_data/API_Knowledge_feature_detail`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -1106,11 +1119,13 @@ const loadDetail = async (node) => {
       qualityScore: data.qualityScore || '',
       contentCompleteness: data.contentCompleteness || '',
       contentStandardization: data.contentStandardization || '',
-      url: `https://i.zte.com.cn/index/ispace/#/space/${data.basicInfo?.spaceId}/wiki/page/${data.basicInfo?.contentId}/view`
+      url: data.url || node.url || (data.basicInfo?.spaceId && data.basicInfo?.contentId
+        ? `https://i.zte.com.cn/index/ispace/#/space/${data.basicInfo.spaceId}/wiki/page/${data.basicInfo.contentId}/view`
+        : '')
     };
 
     if (rawChildNodes.value.length > 0) {
-      childComponentList.value = rawChildNodes.value.map(child => ({
+      childFeatureList.value = rawChildNodes.value.map(child => ({
         id: child.id,
         name: child.name,
         type: child.typeLabel || child.type,
@@ -1120,7 +1135,7 @@ const loadDetail = async (node) => {
         desc: child.desc
       }));
     } else {
-      childComponentList.value = [];
+      childFeatureList.value = [];
     }
   } catch (e) {
     MessagePlugin.error(`读取详情失败：${e.message || e}`);
@@ -1131,7 +1146,7 @@ const loadDetail = async (node) => {
 };
 
 // ============ 图数据加载 ============
-const loadGraphData = async (componentId, scope) => {
+const loadGraphData = async (featureNode, scope) => {
   graphLoading.value = true;
   graphData.value = null;
   showDetailOnly.value = false;
@@ -1143,13 +1158,15 @@ const loadGraphData = async (componentId, scope) => {
   });
   
   try {
-    console.log('加载图数据，组件ID:', componentId, '范围:', scope);
-    
-    const resp = await fetch(`${SERVER_API_URL}/api_data/API_Knowledge_component_graph_get`, {
+    const featureId = featureNode?.id || '';
+    const resp = await fetch(`${SERVER_API_URL}/api_data/API_Knowledge_feature_graph_get`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        seedComponentId: componentId,
+        seedFeatureId: featureId,
+        seedTitle: featureNode?.title || featureNode?.name || '',
+        seedUrl: featureNode?.url || '',
+        seedNodeType: featureNode?.nodeType || featureNode?.type || '',
         scope: scope,
         maxDepth: 2,
         forceRefresh: forceRefresh.value
@@ -1157,11 +1174,7 @@ const loadGraphData = async (componentId, scope) => {
     });
     const res = await resp.json();
     
-    console.log('图数据响应:', res);
-    
     if (resp.ok && res.code === 200 && res.data?.nodes?.length > 0) {
-      console.log('节点数据:', res.data.nodes);
-      console.log('边数据:', res.data.edges);
       graphData.value = res.data;
       buildGraphFromData(res.data);
     } else {
@@ -1182,15 +1195,15 @@ const loadGraphData = async (componentId, scope) => {
 const buildGraphFromData = (data) => {
   if (!data.nodes || !data.nodes.length) return;
   
-  const seedComponentName = data.seedComponentName || '中心组件';
+  const seedFeatureName = data.seedFeatureName || '中心特性';
   
-  centerComponentId.value = 'center_component';
+  centerFeatureId.value = 'center_feature';
   centerNode.value = {
-    id: 'center_component',
-    name: seedComponentName,
+    id: 'center_feature',
+    name: seedFeatureName,
     originalType: 'center',
-    type: 'component',
-    typeLabel: '组件',
+    type: 'feature',
+    typeLabel: '特性',
     desc: '',
     url: '',
     shape: 'ellipse',
@@ -1201,8 +1214,6 @@ const buildGraphFromData = (data) => {
   };
   
   let childNodes = data.nodes;
-  
-  console.log('子节点数量:', childNodes.length);
   
   if (childNodes.length === 0) {
     console.warn('未找到子节点');
@@ -1218,49 +1229,41 @@ const buildGraphFromData = (data) => {
     desc: child.desc || '',
     url: child.url || '',
     level: child.level,
-    parentComponentId: child.parentComponentId,
+    parentFeatureId: child.parentFeatureId,
     pageStatus: child.pageStatus,
   }));
   
   // 按类型汇聚子节点
   const categorizedChildren = {
-    'module': [],
-    'affected_feature': [],
-    'section': [],
-    'dependent_component': []
+    'feature': [],
+    'analysis': [],
+    'scheme': [],
+    'related_feature': [],
+    'category': []
   };
   
+  const normalizeCategoryType = (type) => {
+    if (['feature', 'sub_feature', 'feature_dir'].includes(type)) return 'feature';
+    if (['analysis', 'sub_analysis'].includes(type)) return 'analysis';
+    if (['scheme', 'sub_scheme'].includes(type)) return 'scheme';
+    if (['related_feature'].includes(type)) return 'related_feature';
+    return 'category';
+  };
+
   childNodes.forEach(child => {
     let type = child.type;
-    let categoryType = null;
-    
-    if (type === 'module' || type === 'Module') {
-      categoryType = 'module';
-    } 
-    else if (type === 'affected_feature' || type === 'feature' || type === '特性') {
-      categoryType = 'affected_feature';
-    }
-    else if (type === 'section' || type === 'Section' || type === '章节') {
-      categoryType = 'section';
-    }
-    else if (type === 'component') {
-      categoryType = 'dependent_component';
-    }
-    else {
-      console.warn('未知类型:', type, '归类为模块');
-      categoryType = 'module';
-    }
+    const categoryType = normalizeCategoryType(type);
     
     if (categoryType && categorizedChildren[categoryType]) {
       categorizedChildren[categoryType].push({
         id: child.id,
         name: child.name,
         type: child.type,
-        typeLabel: categoryType === 'dependent_component' ? '依赖组件' : getTypeDisplay(categoryType),
+        typeLabel: getTypeDisplay(type),
         desc: child.desc || '',
         url: child.url || '',
         level: child.level,
-        parentComponentId: child.parentComponentId,
+        parentFeatureId: child.parentFeatureId,
         pageStatus: child.pageStatus,
       });
     }
@@ -1276,13 +1279,13 @@ const buildGraphFromData = (data) => {
           id: `category_${type}`,
           name: config.label,
           originalType: type,
-          type: `category_${type === 'dependent_component' ? 'dependency' : type}`,
+          type: `category_${type}`,
           typeLabel: config.label,
           desc: `共 ${children.length} 个${config.label}`,
           url: '',
           shape: 'rect',
-          width: NODE_CONFIG[`category_${type === 'dependent_component' ? 'dependency' : type}`]?.w || 220,
-          height: NODE_CONFIG[`category_${type === 'dependent_component' ? 'dependency' : type}`]?.h || 80,
+          width: NODE_CONFIG[`category_${type}`]?.w || 220,
+          height: NODE_CONFIG[`category_${type}`]?.h || 80,
           level: 1,
           count: children.length,
           children: children,
@@ -1307,20 +1310,23 @@ const buildGraphFromData = (data) => {
   categories.forEach((cat) => {
     let label = '';
     switch (cat.originalType) {
-      case 'module':
-        label = '包含模块';
+      case 'feature':
+        label = '包含特性';
         break;
-      case 'affected_feature':
+      case 'analysis':
+        label = '包含分析';
+        break;
+      case 'scheme':
+        label = '包含方案';
+        break;
+      case 'related_feature':
         label = '关联特性';
         break;
-      case 'section':
-        label = '包含章节';
-        break;
-      case 'dependent_component':
-        label = '依赖组件';
+      case 'category':
+        label = '包含目录';
         break;
       default:
-        label = '包含模块';
+        label = '包含';
     }
     
     edges.push({
@@ -1466,36 +1472,43 @@ const categoryEdges = computed(() => {
       let arrowType = 'green';
       
       switch (targetCat.originalType) {
-        case 'module':
-          label = '包含模块';
+        case 'feature':
+          label = '包含特性';
           bgColor = '#e6f4ea';
           strokeColor = '#2ba471';
           textColor = '#137333';
           arrowType = 'green';
           break;
-        case 'affected_feature':
-          label = '关联特性';
-          bgColor = '#fce8e6';
-          strokeColor = '#c5221f';
-          textColor = '#a50e0e';
-          arrowType = 'red';
-          break;
-        case 'section':
-          label = '包含章节';
+        case 'analysis':
+          label = '包含分析';
           bgColor = '#e8f0fe';
           strokeColor = '#1967d2';
           textColor = '#174ea6';
           arrowType = 'blue';
           break;
-        case 'dependent_component':
-          label = '依赖组件';
+        case 'scheme':
+          label = '包含方案';
+          bgColor = '#fce8e6';
+          strokeColor = '#c5221f';
+          textColor = '#a50e0e';
+          arrowType = 'red';
+          break;
+        case 'related_feature':
+          label = '关联特性';
           bgColor = '#fff3e0';
           strokeColor = '#e37318';
           textColor = '#8b4a0b';
           arrowType = 'orange';
           break;
+        case 'category':
+          label = '包含目录';
+          bgColor = '#eef0ff';
+          strokeColor = '#5e6ad2';
+          textColor = '#30368c';
+          arrowType = 'green';
+          break;
         default:
-          label = '包含模块';
+          label = '包含';
       }
       
       const offsetX = idx * 10 - 15;
@@ -1554,14 +1567,14 @@ const onTreeNodeClick = async(context) => {
   loadDetail(node);
   
   const shouldLoadGraph = (
-    (tabValue.value === 'WASON') && 
-    (node.level === 2 || node.level === 3)
-  ) || (node.level === 2 && tabValue.value !== 'WASON' && tabValue.value !== 'OSP');
+    node.level >= 3 &&
+    (node.hasChildren || ['feature', 'sub_feature', 'category'].includes(node.nodeType))
+  );
   
   if (shouldLoadGraph) {
     currentSeedNode.value = node;
     const scope = getScopeByTab(tabValue.value);
-    loadGraphData(node.id, scope);
+    loadGraphData(node, scope);
   } else {
     graphData.value = null;
     categoryNodes.value = [];
@@ -1588,15 +1601,15 @@ const selectNode = (node) => {
   let fullNode = { ...node };
   if (!fullNode.url) fullNode.url = '';
   
-  // 清除之前选中的子组件内容
+  // 清除之前选中的子节点内容
   clearSelectedContent();
   
   if (node.id.startsWith('category_')) {
-    drawerChildComponentList.value = (node.children || []).map(child => ({
+    drawerChildFeatureList.value = (node.children || []).map(child => ({
       ...child,
     }));
   } else {
-    drawerChildComponentList.value = [];
+    drawerChildFeatureList.value = [];
   }
   
   selectedNode.value = fullNode;
@@ -1616,7 +1629,7 @@ const selectNode = (node) => {
 
 const handleDrawerClose = () => {
   clearSelectedContent();
-  // 不需要重置 drawerChildComponentList，因为下次打开时会重新设置
+  // 不需要重置 drawerChildFeatureList，因为下次打开时会重新设置
 };
 
 const onSvgMouseDown = (e) => {
@@ -2010,7 +2023,7 @@ const toggleHtmlFullscreen = () => {
 
 <style scoped>
 /* 样式保持与原代码相同，新增内容模块样式 */
-.component-main {
+.feature-main {
   width: 100%;
   height: 100vh;
   display: flex;

@@ -37,8 +37,8 @@ def _validate_feature_node_title(title: str, node_type: str) -> bool:
     if not title or not isinstance(title, str):
         return False
 
-    # 1. 特性编号基础格式：大写字母(1-2位) + 6位数字，可选 -数字 后缀
-    feature_base_pattern = r'^[A-Z]{1,2}\d{6}(-\d+)?-.*'
+    # 1. 特性编号基础格式：F/FD/FS + 6位数字，可选 -数字 后缀 + 类型标识(O/E/P/C/SEC等)
+    feature_base_pattern = r'^(?:F|FD|FS)\d{6}(?:-\d+)?-[A-Z]{1,3}-.+'
 
     # 2. 按 node_type 精细校验
     if node_type == "feature":
@@ -68,8 +68,18 @@ def _validate_feature_node_title(title: str, node_type: str) -> bool:
             return True
         return False
 
+    if node_type == "sub_analysis":
+        if title.endswith("子特性分析") or title.endswith("特性分析"):
+            return True
+        return False
+
+    if node_type == "sub_scheme":
+        if title.endswith("子特性方案") or title.endswith("特性方案"):
+            return True
+        return False
+
     # 3. category / root 类型允许任何标题（但通常用于目录页）
-    if node_type in ["category", "root"]:
+    if node_type in ["category", "root", "feature_domain", "feature_group", "related_feature"]:
         return True
 
     # 4. 其他类型默认不通过
@@ -78,7 +88,7 @@ def _validate_feature_node_title(title: str, node_type: str) -> bool:
 
 
 # ============================================================================
-# 1. 特性树节点缓存表（对应原 KNOWLEDGE_COMPONENT_TREE）
+# 1. 特性树节点缓存表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_TREE(db.Model):
@@ -192,7 +202,7 @@ def replace_knowledge_feature_tree_nodes(scope, node_list, operator_person="", s
 
 
 # ============================================================================
-# 2. 特性知识图谱缓存表（对应原 KNOWLEDGE_COMPONENT_GRAPH）
+# 2. 特性知识图谱缓存表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_GRAPH(db.Model):
@@ -222,7 +232,7 @@ class KNOWLEDGE_FEATURE_GRAPH(db.Model):
 
 
 # ============================================================================
-# 3. 特性图谱节点明细表（对应原 KNOWLEDGE_COMPONENT_GRAPH_NODE）
+# 3. 特性图谱节点明细表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_GRAPH_NODE(db.Model):
@@ -248,7 +258,7 @@ class KNOWLEDGE_FEATURE_GRAPH_NODE(db.Model):
 
 
 # ============================================================================
-# 4. 特性图谱边明细表（对应原 KNOWLEDGE_COMPONENT_GRAPH_EDGE）
+# 4. 特性图谱边明细表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_GRAPH_EDGE(db.Model):
@@ -271,7 +281,7 @@ class KNOWLEDGE_FEATURE_GRAPH_EDGE(db.Model):
 
 
 # ============================================================================
-# 5. 特性分析/方案内容缓存表（对应原 KNOWLEDGE_COMPONENT_SECTION）
+# 5. 特性分析/方案内容缓存表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_DOCUMENT(db.Model):
@@ -297,7 +307,7 @@ class KNOWLEDGE_FEATURE_DOCUMENT(db.Model):
 
 
 # ============================================================================
-# 6. 特性图谱布局配置表（对应原 KNOWLEDGE_COMPONENT_GRAPH_LAYOUT）
+# 6. 特性图谱布局配置表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_GRAPH_LAYOUT(db.Model):
