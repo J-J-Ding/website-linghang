@@ -7,78 +7,103 @@ import json
 from electric_knowledge.data_model import db
 
 
+
 # ============================================================================
 # 特性树专用标题格式校验工具
 # ============================================================================
 
+# def _validate_feature_node_title(title: str, node_type: str) -> bool:
+#     """
+#     根据节点类型校验特性树标题格式
+
+#     校验策略：
+#     - 如果标题符合特性/子特性/分析/方案等格式，直接通过
+#     - 如果不符合特定格式，仅当 node_type 为 category/root 时通过
+
+#     特性格式示例：
+#       - F010101-业务波CDWSS波长选择
+#       - FD010101-业务波CDWSS波长选择
+#       - FS030110-01-子特性名称
+#       - F010101-业务波CDWSS波长选择-特性分析
+#       - F010101-业务波CDWSS波长选择-特性方案
+#       - F010101-业务波CDWSS波长选择-子特性分析
+
+#     Args:
+#         title: 节点标题
+#         node_type: 节点类型（feature/sub_feature/analysis/scheme/category/root）
+
+#     Returns:
+#         bool: 校验是否通过
+#     """
+#     if not title or not isinstance(title, str):
+#         return False
+
+#     # 1. 特性编号基础格式：F/FD/FS + 6位数字，可选 -数字 后缀 + 类型标识(O/E/P/C/SEC等)
+#     feature_base_pattern = r'^(?:F|FD|FS)\d{6}(?:-\d+)?-[A-Z]{1,3}-.+'
+
+#     # 2. 按 node_type 精细校验
+#     if node_type == "feature":
+#         # 特性节点：必须符合基础格式，且不能以"特性分析"/"特性方案"/"子特性分析"结尾
+#         if re.match(feature_base_pattern, title):
+#             if not re.search(r'-(特性分析|特性方案|子特性分析)$', title):
+#                 return True
+#         return False
+
+#     if node_type == "sub_feature":
+#         # 子特性：通常以 F 开头，或包含子特性特征，这里放宽为包含 "子特性" 或符合基础格式且没有分析/方案后缀
+#         if "子特性" in title and not re.search(r'-(特性分析|特性方案)$', title):
+#             return True
+#         if re.match(feature_base_pattern, title) and not re.search(r'-(特性分析|特性方案)$', title):
+#             return True
+#         return False
+
+#     if node_type == "analysis":
+#         # 特性分析：必须以"特性分析"结尾
+#         if title.endswith("特性分析"):
+#             return True
+#         return False
+
+#     if node_type == "scheme":
+#         # 特性方案：必须以"特性方案"结尾
+#         if title.endswith("特性方案"):
+#             return True
+#         return False
+
+#     if node_type == "sub_analysis":
+#         if title.endswith("子特性分析") or title.endswith("特性分析"):
+#             return True
+#         return False
+
+#     if node_type == "sub_scheme":
+#         if title.endswith("子特性方案") or title.endswith("特性方案"):
+#             return True
+#         return False
+
+#     # 3. category / root 类型允许任何标题（但通常用于目录页）
+#     if node_type in ["category", "root", "feature_domain", "feature_group", "related_feature"]:
+#         return True
+
+#     # 4. 其他类型默认不通过
+#     print(f"Warning: Feature node title validation failed: title={title}, node_type={node_type}")
+#     return False
+
 def _validate_feature_node_title(title: str, node_type: str) -> bool:
-    """
-    根据节点类型校验特性树标题格式
-
-    校验策略：
-    - 如果标题符合特性/子特性/分析/方案等格式，直接通过
-    - 如果不符合特定格式，仅当 node_type 为 category/root 时通过
-
-    特性格式示例：
-      - F010101-业务波CDWSS波长选择
-      - FD010101-业务波CDWSS波长选择
-      - FS030110-01-子特性名称
-      - F010101-业务波CDWSS波长选择-特性分析
-      - F010101-业务波CDWSS波长选择-特性方案
-      - F010101-业务波CDWSS波长选择-子特性分析
-
-    Args:
-        title: 节点标题
-        node_type: 节点类型（feature/sub_feature/analysis/scheme/category/root）
-
-    Returns:
-        bool: 校验是否通过
-    """
-    if not title or not isinstance(title, str):
+    title_strip = title.strip() if isinstance(title, str) else ""
+    # 空标题直接过滤
+    if not title_strip:
         return False
-
-    # 1. 特性编号基础格式：大写字母(1-2位) + 6位数字，可选 -数字 后缀
-    feature_base_pattern = r'^[A-Z]{1,2}\d{6}(-\d+)?-.*'
-
-    # 2. 按 node_type 精细校验
-    if node_type == "feature":
-        # 特性节点：必须符合基础格式，且不能以"特性分析"/"特性方案"/"子特性分析"结尾
-        if re.match(feature_base_pattern, title):
-            if not re.search(r'-(特性分析|特性方案|子特性分析)$', title):
-                return True
+    # 过滤黑名单汇总页面
+    if title_strip in FEATURE_SKIP_TITLES:
         return False
-
-    if node_type == "sub_feature":
-        # 子特性：通常以 F 开头，或包含子特性特征，这里放宽为包含 "子特性" 或符合基础格式且没有分析/方案后缀
-        if "子特性" in title and not re.search(r'-(特性分析|特性方案)$', title):
-            return True
-        if re.match(feature_base_pattern, title) and not re.search(r'-(特性分析|特性方案)$', title):
-            return True
-        return False
-
-    if node_type == "analysis":
-        # 特性分析：必须以"特性分析"结尾
-        if title.endswith("特性分析"):
-            return True
-        return False
-
-    if node_type == "scheme":
-        # 特性方案：必须以"特性方案"结尾
-        if title.endswith("特性方案"):
-            return True
-        return False
-
-    # 3. category / root 类型允许任何标题（但通常用于目录页）
-    if node_type in ["category", "root"]:
+    # 目录、主特性、子特性、普通页面全部放行
+    pass_types = ["category", "feature", "sub_feature", "other"]
+    if node_type in pass_types:
         return True
-
-    # 4. 其他类型默认不通过
-    print(f"Warning: Feature node title validation failed: title={title}, node_type={node_type}")
     return False
 
 
 # ============================================================================
-# 1. 特性树节点缓存表（对应原 KNOWLEDGE_COMPONENT_TREE）
+# 1. 特性树节点缓存表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_TREE(db.Model):
@@ -192,7 +217,7 @@ def replace_knowledge_feature_tree_nodes(scope, node_list, operator_person="", s
 
 
 # ============================================================================
-# 2. 特性知识图谱缓存表（对应原 KNOWLEDGE_COMPONENT_GRAPH）
+# 2. 特性知识图谱缓存表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_GRAPH(db.Model):
@@ -222,7 +247,7 @@ class KNOWLEDGE_FEATURE_GRAPH(db.Model):
 
 
 # ============================================================================
-# 3. 特性图谱节点明细表（对应原 KNOWLEDGE_COMPONENT_GRAPH_NODE）
+# 3. 特性图谱节点明细表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_GRAPH_NODE(db.Model):
@@ -248,7 +273,7 @@ class KNOWLEDGE_FEATURE_GRAPH_NODE(db.Model):
 
 
 # ============================================================================
-# 4. 特性图谱边明细表（对应原 KNOWLEDGE_COMPONENT_GRAPH_EDGE）
+# 4. 特性图谱边明细表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_GRAPH_EDGE(db.Model):
@@ -271,7 +296,7 @@ class KNOWLEDGE_FEATURE_GRAPH_EDGE(db.Model):
 
 
 # ============================================================================
-# 5. 特性分析/方案内容缓存表（对应原 KNOWLEDGE_COMPONENT_SECTION）
+# 5. 特性分析/方案内容缓存表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_DOCUMENT(db.Model):
@@ -297,7 +322,7 @@ class KNOWLEDGE_FEATURE_DOCUMENT(db.Model):
 
 
 # ============================================================================
-# 6. 特性图谱布局配置表（对应原 KNOWLEDGE_COMPONENT_GRAPH_LAYOUT）
+# 6. 特性图谱布局配置表
 # ============================================================================
 
 class KNOWLEDGE_FEATURE_GRAPH_LAYOUT(db.Model):
@@ -585,3 +610,7 @@ def query_feature_documents(feature_id: str):
         KNOWLEDGE_FEATURE_DOCUMENT.feature_id == feature_id
     ).all()
     return [doc.to_dict() for doc in docs]
+
+
+# ----------------------------------------------
+

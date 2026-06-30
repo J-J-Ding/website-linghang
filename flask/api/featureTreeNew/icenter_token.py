@@ -58,8 +58,3 @@ def get_token(X_Emp_No, passwd, loginsyscode, originsyscode):
     content = requests.post(url,data=json.dumps(text),headers=headers)
     #print(content.text)
     return content.json()
-
-
-
-
-

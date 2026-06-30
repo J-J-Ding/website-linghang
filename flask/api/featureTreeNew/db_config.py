@@ -8,4 +8,4 @@ DB_PASSWORD = os.getenv('DB_PASSWORD')
 DB_PORT = 3306
 
 # 表配置
-TABLE_KNOWLEDGE_COMPONENT_TREE = "knowledge_component_tree"
+TABLE_KNOWLEDGE_FEATURE_TREE = "knowledge_feature_tree"
